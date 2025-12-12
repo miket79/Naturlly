@@ -1,0 +1,571 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2703C8B82EE9AE9800455D53 /* GoogleTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8AB2EE9AE9800455D53 /* GoogleTTSService.swift */; };
+		2703C8B92EE9AE9800455D53 /* TTSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B52EE9AE9800455D53 /* TTSRequest.swift */; };
+		2703C8BA2EE9AE9800455D53 /* EPUBReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A82EE9AE9800455D53 /* EPUBReader.swift */; };
+		2703C8BB2EE9AE9800455D53 /* NaturalLanguageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8AF2EE9AE9800455D53 /* NaturalLanguageService.swift */; };
+		2703C8BC2EE9AE9800455D53 /* PDFDocumentReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B22EE9AE9800455D53 /* PDFDocumentReader.swift */; };
+		2703C8BD2EE9AE9800455D53 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A52EE9AE9800455D53 /* DocumentPicker.swift */; };
+		2703C8BE2EE9AE9800455D53 /* AudioPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C89F2EE9AE9800455D53 /* AudioPlayerManager.swift */; };
+		2703C8BF2EE9AE9800455D53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A02EE9AE9800455D53 /* ContentView.swift */; };
+		2703C8C02EE9AE9800455D53 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A42EE9AE9800455D53 /* Document.swift */; };
+		2703C8C12EE9AE9800455D53 /* TTSVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B62EE9AE9800455D53 /* TTSVoice.swift */; };
+		2703C8C22EE9AE9800455D53 /* DocumentPresentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A62EE9AE9800455D53 /* DocumentPresentationView.swift */; };
+		2703C8C32EE9AE9800455D53 /* VoicePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B72EE9AE9800455D53 /* VoicePickerView.swift */; };
+		2703C8C42EE9AE9800455D53 /* NaturllyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B12EE9AE9800455D53 /* NaturllyApp.swift */; };
+		2703C8C52EE9AE9800455D53 /* TTSLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8B42EE9AE9800455D53 /* TTSLanguage.swift */; };
+		2703C8C62EE9AE9800455D53 /* DocumentSectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8A72EE9AE9800455D53 /* DocumentSectionsView.swift */; };
+		2703C8C72EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8AD2EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md */; };
+		2703C8C82EE9AE9800455D53 /* FIX_ObservableObject.md in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8AA2EE9AE9800455D53 /* FIX_ObservableObject.md */; };
+		2703C8C92EE9AE9800455D53 /* setup.sh in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8B32EE9AE9800455D53 /* setup.sh */; };
+		2703C8CA2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8AE2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md */; };
+		2703C8CB2EE9AE9800455D53 /* ContentView.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8A12EE9AE9800455D53 /* ContentView.swift.backup */; };
+		2703C8CC2EE9AE9800455D53 /* ContentView.swift.bak2 in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8A22EE9AE9800455D53 /* ContentView.swift.bak2 */; };
+		2703C8CD2EE9AE9800455D53 /* INSTALL.md in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8AC2EE9AE9800455D53 /* INSTALL.md */; };
+		2703C8CE2EE9AE9800455D53 /* ContentView.swift.bak3 in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8A32EE9AE9800455D53 /* ContentView.swift.bak3 */; };
+		2703C8CF2EE9AE9800455D53 /* FIX_LONG_TEXT.md in Resources */ = {isa = PBXBuildFile; fileRef = 2703C8A92EE9AE9800455D53 /* FIX_LONG_TEXT.md */; };
+		2703C8D22EE9B1C000455D53 /* VoiceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8D12EE9B1C000455D53 /* VoiceService.swift */; };
+		2703C8D42EE9B97700455D53 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8D32EE9B97700455D53 /* APIConfig.swift */; };
+		2703C8D72EE9BDFE00455D53 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8D62EE9BDFE00455D53 /* Algorithms */; };
+		2703C8DA2EE9BE1700455D53 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8D92EE9BE1700455D53 /* ZIPFoundation */; };
+		2703C8DE2EE9BE5F00455D53 /* AEXML in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8DD2EE9BE5F00455D53 /* AEXML */; };
+		2703C8E12EE9BE8300455D53 /* SwiftASN1 in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8E02EE9BE8300455D53 /* SwiftASN1 */; };
+		2703C8E42EE9BEA400455D53 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8E32EE9BEA400455D53 /* AsyncAlgorithms */; };
+		2703C8E82EEC4E6600455D53 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8E72EEC4E6600455D53 /* LibraryView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2703C8912EE9ADCC00455D53 /* Naturlly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Naturlly.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2703C89F2EE9AE9800455D53 /* AudioPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerManager.swift; sourceTree = "<group>"; };
+		2703C8A02EE9AE9800455D53 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2703C8A12EE9AE9800455D53 /* ContentView.swift.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = ContentView.swift.backup; sourceTree = "<group>"; };
+		2703C8A22EE9AE9800455D53 /* ContentView.swift.bak2 */ = {isa = PBXFileReference; lastKnownFileType = text; path = ContentView.swift.bak2; sourceTree = "<group>"; };
+		2703C8A32EE9AE9800455D53 /* ContentView.swift.bak3 */ = {isa = PBXFileReference; lastKnownFileType = text; path = ContentView.swift.bak3; sourceTree = "<group>"; };
+		2703C8A42EE9AE9800455D53 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		2703C8A52EE9AE9800455D53 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		2703C8A62EE9AE9800455D53 /* DocumentPresentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPresentationView.swift; sourceTree = "<group>"; };
+		2703C8A72EE9AE9800455D53 /* DocumentSectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentSectionsView.swift; sourceTree = "<group>"; };
+		2703C8A82EE9AE9800455D53 /* EPUBReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReader.swift; sourceTree = "<group>"; };
+		2703C8A92EE9AE9800455D53 /* FIX_LONG_TEXT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIX_LONG_TEXT.md; sourceTree = "<group>"; };
+		2703C8AA2EE9AE9800455D53 /* FIX_ObservableObject.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIX_ObservableObject.md; sourceTree = "<group>"; };
+		2703C8AB2EE9AE9800455D53 /* GoogleTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleTTSService.swift; sourceTree = "<group>"; };
+		2703C8AC2EE9AE9800455D53 /* INSTALL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = INSTALL.md; sourceTree = "<group>"; };
+		2703C8AD2EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = INSTRUCCIONES_USUARIO.md; sourceTree = "<group>"; };
+		2703C8AE2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = NATURAL_LANGUAGE_INTEGRATION.md; sourceTree = "<group>"; };
+		2703C8AF2EE9AE9800455D53 /* NaturalLanguageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaturalLanguageService.swift; sourceTree = "<group>"; };
+		2703C8B02EE9AE9800455D53 /* Naturlly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Naturlly-Bridging-Header.h"; sourceTree = "<group>"; };
+		2703C8B12EE9AE9800455D53 /* NaturllyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaturllyApp.swift; sourceTree = "<group>"; };
+		2703C8B22EE9AE9800455D53 /* PDFDocumentReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFDocumentReader.swift; sourceTree = "<group>"; };
+		2703C8B32EE9AE9800455D53 /* setup.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = setup.sh; sourceTree = "<group>"; };
+		2703C8B42EE9AE9800455D53 /* TTSLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSLanguage.swift; sourceTree = "<group>"; };
+		2703C8B52EE9AE9800455D53 /* TTSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSRequest.swift; sourceTree = "<group>"; };
+		2703C8B62EE9AE9800455D53 /* TTSVoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSVoice.swift; sourceTree = "<group>"; };
+		2703C8B72EE9AE9800455D53 /* VoicePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePickerView.swift; sourceTree = "<group>"; };
+		2703C8D12EE9B1C000455D53 /* VoiceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceService.swift; sourceTree = "<group>"; };
+		2703C8D32EE9B97700455D53 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
+		2703C8E72EEC4E6600455D53 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2703C8E62EE9BF3500455D53 /* Exceptions for "Naturlly" folder in "Naturlly" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2703C8902EE9ADCC00455D53 /* Naturlly */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2703C8932EE9ADCC00455D53 /* Naturlly */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2703C8E62EE9BF3500455D53 /* Exceptions for "Naturlly" folder in "Naturlly" target */,
+			);
+			path = Naturlly;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2703C88E2EE9ADCC00455D53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2703C8DE2EE9BE5F00455D53 /* AEXML in Frameworks */,
+				2703C8E12EE9BE8300455D53 /* SwiftASN1 in Frameworks */,
+				2703C8D72EE9BDFE00455D53 /* Algorithms in Frameworks */,
+				2703C8DA2EE9BE1700455D53 /* ZIPFoundation in Frameworks */,
+				2703C8E42EE9BEA400455D53 /* AsyncAlgorithms in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2703C8882EE9ADCC00455D53 = {
+			isa = PBXGroup;
+			children = (
+				2703C8932EE9ADCC00455D53 /* Naturlly */,
+				2703C89F2EE9AE9800455D53 /* AudioPlayerManager.swift */,
+				2703C8A02EE9AE9800455D53 /* ContentView.swift */,
+				2703C8A12EE9AE9800455D53 /* ContentView.swift.backup */,
+				2703C8A22EE9AE9800455D53 /* ContentView.swift.bak2 */,
+				2703C8A32EE9AE9800455D53 /* ContentView.swift.bak3 */,
+				2703C8A42EE9AE9800455D53 /* Document.swift */,
+				2703C8A52EE9AE9800455D53 /* DocumentPicker.swift */,
+				2703C8A62EE9AE9800455D53 /* DocumentPresentationView.swift */,
+				2703C8A72EE9AE9800455D53 /* DocumentSectionsView.swift */,
+				2703C8A82EE9AE9800455D53 /* EPUBReader.swift */,
+				2703C8A92EE9AE9800455D53 /* FIX_LONG_TEXT.md */,
+				2703C8AA2EE9AE9800455D53 /* FIX_ObservableObject.md */,
+				2703C8AB2EE9AE9800455D53 /* GoogleTTSService.swift */,
+				2703C8AC2EE9AE9800455D53 /* INSTALL.md */,
+				2703C8AD2EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md */,
+				2703C8AE2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md */,
+				2703C8AF2EE9AE9800455D53 /* NaturalLanguageService.swift */,
+				2703C8B02EE9AE9800455D53 /* Naturlly-Bridging-Header.h */,
+				2703C8B12EE9AE9800455D53 /* NaturllyApp.swift */,
+				2703C8B22EE9AE9800455D53 /* PDFDocumentReader.swift */,
+				2703C8B32EE9AE9800455D53 /* setup.sh */,
+				2703C8B42EE9AE9800455D53 /* TTSLanguage.swift */,
+				2703C8B52EE9AE9800455D53 /* TTSRequest.swift */,
+				2703C8B62EE9AE9800455D53 /* TTSVoice.swift */,
+				2703C8B72EE9AE9800455D53 /* VoicePickerView.swift */,
+				2703C8922EE9ADCC00455D53 /* Products */,
+				2703C8D12EE9B1C000455D53 /* VoiceService.swift */,
+				2703C8D32EE9B97700455D53 /* APIConfig.swift */,
+				2703C8E72EEC4E6600455D53 /* LibraryView.swift */,
+			);
+			sourceTree = "<group>";
+		};
+		2703C8922EE9ADCC00455D53 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2703C8912EE9ADCC00455D53 /* Naturlly.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2703C8902EE9ADCC00455D53 /* Naturlly */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2703C89C2EE9ADCE00455D53 /* Build configuration list for PBXNativeTarget "Naturlly" */;
+			buildPhases = (
+				2703C88D2EE9ADCC00455D53 /* Sources */,
+				2703C88E2EE9ADCC00455D53 /* Frameworks */,
+				2703C88F2EE9ADCC00455D53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2703C8932EE9ADCC00455D53 /* Naturlly */,
+			);
+			name = Naturlly;
+			packageProductDependencies = (
+				2703C8D62EE9BDFE00455D53 /* Algorithms */,
+				2703C8D92EE9BE1700455D53 /* ZIPFoundation */,
+				2703C8DD2EE9BE5F00455D53 /* AEXML */,
+				2703C8E02EE9BE8300455D53 /* SwiftASN1 */,
+				2703C8E32EE9BEA400455D53 /* AsyncAlgorithms */,
+			);
+			productName = Naturlly;
+			productReference = 2703C8912EE9ADCC00455D53 /* Naturlly.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2703C8892EE9ADCC00455D53 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2610;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					2703C8902EE9ADCC00455D53 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 2703C88C2EE9ADCC00455D53 /* Build configuration list for PBXProject "Naturlly" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2703C8882EE9ADCC00455D53;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2703C8D52EE9BDFE00455D53 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				2703C8D82EE9BE1700455D53 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */,
+				2703C8DC2EE9BE5F00455D53 /* XCRemoteSwiftPackageReference "AEXML" */,
+				2703C8DF2EE9BE8300455D53 /* XCRemoteSwiftPackageReference "swift-asn1" */,
+				2703C8E22EE9BEA400455D53 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2703C8922EE9ADCC00455D53 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2703C8902EE9ADCC00455D53 /* Naturlly */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2703C88F2EE9ADCC00455D53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2703C8C72EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md in Resources */,
+				2703C8C82EE9AE9800455D53 /* FIX_ObservableObject.md in Resources */,
+				2703C8C92EE9AE9800455D53 /* setup.sh in Resources */,
+				2703C8CA2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md in Resources */,
+				2703C8CB2EE9AE9800455D53 /* ContentView.swift.backup in Resources */,
+				2703C8CC2EE9AE9800455D53 /* ContentView.swift.bak2 in Resources */,
+				2703C8CD2EE9AE9800455D53 /* INSTALL.md in Resources */,
+				2703C8CE2EE9AE9800455D53 /* ContentView.swift.bak3 in Resources */,
+				2703C8CF2EE9AE9800455D53 /* FIX_LONG_TEXT.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2703C88D2EE9ADCC00455D53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2703C8B82EE9AE9800455D53 /* GoogleTTSService.swift in Sources */,
+				2703C8B92EE9AE9800455D53 /* TTSRequest.swift in Sources */,
+				2703C8BA2EE9AE9800455D53 /* EPUBReader.swift in Sources */,
+				2703C8BB2EE9AE9800455D53 /* NaturalLanguageService.swift in Sources */,
+				2703C8E82EEC4E6600455D53 /* LibraryView.swift in Sources */,
+				2703C8D42EE9B97700455D53 /* APIConfig.swift in Sources */,
+				2703C8D22EE9B1C000455D53 /* VoiceService.swift in Sources */,
+				2703C8BC2EE9AE9800455D53 /* PDFDocumentReader.swift in Sources */,
+				2703C8BD2EE9AE9800455D53 /* DocumentPicker.swift in Sources */,
+				2703C8BE2EE9AE9800455D53 /* AudioPlayerManager.swift in Sources */,
+				2703C8BF2EE9AE9800455D53 /* ContentView.swift in Sources */,
+				2703C8C02EE9AE9800455D53 /* Document.swift in Sources */,
+				2703C8C12EE9AE9800455D53 /* TTSVoice.swift in Sources */,
+				2703C8C32EE9AE9800455D53 /* VoicePickerView.swift in Sources */,
+				2703C8C22EE9AE9800455D53 /* DocumentPresentationView.swift in Sources */,
+				2703C8C42EE9AE9800455D53 /* NaturllyApp.swift in Sources */,
+				2703C8C52EE9AE9800455D53 /* TTSLanguage.swift in Sources */,
+				2703C8C62EE9AE9800455D53 /* DocumentSectionsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2703C89A2EE9ADCE00455D53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3GLCJ7M245;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2703C89B2EE9ADCE00455D53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3GLCJ7M245;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2703C89D2EE9ADCE00455D53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3GLCJ7M245;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Naturlly/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Naturlly;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maikeltornes.Naturlly;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2703C89E2EE9ADCE00455D53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3GLCJ7M245;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Naturlly/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Naturlly;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maikeltornes.Naturlly;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2703C88C2EE9ADCC00455D53 /* Build configuration list for PBXProject "Naturlly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2703C89A2EE9ADCE00455D53 /* Debug */,
+				2703C89B2EE9ADCE00455D53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2703C89C2EE9ADCE00455D53 /* Build configuration list for PBXNativeTarget "Naturlly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2703C89D2EE9ADCE00455D53 /* Debug */,
+				2703C89E2EE9ADCE00455D53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2703C8D52EE9BDFE00455D53 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+		2703C8D82EE9BE1700455D53 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.20;
+			};
+		};
+		2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.91.0;
+			};
+		};
+		2703C8DC2EE9BE5F00455D53 /* XCRemoteSwiftPackageReference "AEXML" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tadija/AEXML";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.7.0;
+			};
+		};
+		2703C8DF2EE9BE8300455D53 /* XCRemoteSwiftPackageReference "swift-asn1" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-asn1.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
+		2703C8E22EE9BEA400455D53 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2703C8D62EE9BDFE00455D53 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8D52EE9BDFE00455D53 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		2703C8D92EE9BE1700455D53 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8D82EE9BE1700455D53 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		2703C8DD2EE9BE5F00455D53 /* AEXML */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DC2EE9BE5F00455D53 /* XCRemoteSwiftPackageReference "AEXML" */;
+			productName = AEXML;
+		};
+		2703C8E02EE9BE8300455D53 /* SwiftASN1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DF2EE9BE8300455D53 /* XCRemoteSwiftPackageReference "swift-asn1" */;
+			productName = SwiftASN1;
+		};
+		2703C8E32EE9BEA400455D53 /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8E22EE9BEA400455D53 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 2703C8892EE9ADCC00455D53 /* Project object */;
+}
