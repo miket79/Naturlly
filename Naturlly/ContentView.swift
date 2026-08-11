@@ -654,12 +654,15 @@ struct ContentView: View {
             loadAPIKey()
             setupAudioCallback()
             loadPersistentProgressIfNeeded()
+            restoreReadingSession()
         }
         .onChange(of: text) { _, newValue in
             syncSelectedDocumentTextIfNeeded(newValue)
         }
         .onChange(of: documents) { _, _ in
+            progressLoaded = false
             loadPersistentProgressIfNeeded()
+            restoreReadingSession()
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)
@@ -1213,6 +1216,69 @@ struct ContentView: View {
 
         // Persistir en disco
         savePersistentProgress()
+        persistReadingSession()
+    }
+
+    private func persistReadingSession() {
+        let defaults = UserDefaults.standard
+
+        if let document = selectedDocument {
+            defaults.set(document.id.uuidString, forKey: "NaturllyLastReadDocumentID")
+            defaults.set(document.name, forKey: "NaturllyLastReadDocumentName")
+        } else {
+            defaults.removeObject(forKey: "NaturllyLastReadDocumentID")
+            defaults.removeObject(forKey: "NaturllyLastReadDocumentName")
+        }
+
+        defaults.set(lastReadSectionIndex, forKey: "NaturllyLastReadSectionIndex")
+        defaults.set(lastPlaybackPosition, forKey: "NaturllyLastPlaybackPosition")
+        defaults.set(canContinueReading, forKey: "NaturllyCanContinueReading")
+        defaults.set(selectedLanguage.code, forKey: "NaturllyLastLanguageCode")
+        defaults.set(bookMode, forKey: "NaturllyBookMode")
+        defaults.set(useVertexVoices, forKey: "UseVertexVoices")
+
+        if let voice = selectedVoice {
+            defaults.set(voice.id, forKey: "NaturllyLastVoiceID")
+            defaults.set(voice.languageCode, forKey: "NaturllyLastVoiceLanguageCode")
+            defaults.set(voice.name, forKey: "NaturllyLastVoiceName")
+        } else {
+            defaults.removeObject(forKey: "NaturllyLastVoiceID")
+            defaults.removeObject(forKey: "NaturllyLastVoiceLanguageCode")
+            defaults.removeObject(forKey: "NaturllyLastVoiceName")
+        }
+    }
+
+    private func restoreReadingSession() {
+        let defaults = UserDefaults.standard
+
+        if let languageCode = defaults.string(forKey: "NaturllyLastLanguageCode"),
+           let language = TTSLanguage.availableLanguages.first(where: { $0.code == languageCode }) {
+            selectedLanguage = language
+        }
+
+        if let voiceID = defaults.string(forKey: "NaturllyLastVoiceID"),
+           let languageCode = defaults.string(forKey: "NaturllyLastVoiceLanguageCode") {
+            selectedVoice = TTSVoice.getVoices(for: languageCode).first(where: { $0.id == voiceID })
+        }
+
+        if defaults.object(forKey: "NaturllyBookMode") != nil {
+            bookMode = defaults.bool(forKey: "NaturllyBookMode")
+        }
+
+        guard let documentID = defaults.string(forKey: "NaturllyLastReadDocumentID"),
+              let savedDocument = documents.first(where: { $0.id.uuidString == documentID }) else {
+            return
+        }
+
+        lastReadDocument = savedDocument
+        canContinueReading = defaults.bool(forKey: "NaturllyCanContinueReading")
+        lastReadSectionIndex = defaults.integer(forKey: "NaturllyLastReadSectionIndex")
+        lastPlaybackPosition = defaults.double(forKey: "NaturllyLastPlaybackPosition")
+
+        if savedDocument.hasSections && !savedDocument.sections.isEmpty {
+            sectionsQueue = savedDocument.sections
+            currentSectionIndex = min(max(lastReadSectionIndex, 0), sectionsQueue.count - 1)
+        }
     }
     
     private func continueReading() {
@@ -1309,7 +1375,9 @@ struct ContentView: View {
                     try? fileManager.removeItem(at: progressURL)
                 }
             }
-            progressLoaded = true
+            if lastReadDocument != nil {
+                progressLoaded = true
+            }
         } catch {
             // No progreso previo o fallo al decodificar
             progressLoaded = true
