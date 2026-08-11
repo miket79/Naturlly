@@ -592,6 +592,7 @@ struct ContentView: View {
         }
         .onAppear {
             loadAPIKey()
+            restoreReadingSession()
             setupAudioCallback()
         }
     }    
@@ -1049,35 +1050,107 @@ struct ContentView: View {
     private func saveReadingProgress() {
         // Guardar el documento actual
         lastReadDocument = selectedDocument
-        
+
         // Guardar el índice de sección actual
         lastReadSectionIndex = currentSectionIndex
-        
+
         // Guardar la posición de reproducción
         lastPlaybackPosition = audioPlayer.currentTime
-        
+
         // Habilitar el botón de continuar
         canContinueReading = true
+
+        persistReadingSession()
     }
-    
+
+    private func persistReadingSession() {
+        let defaults = UserDefaults.standard
+
+        if let document = selectedDocument {
+            defaults.set(document.id.uuidString, forKey: "NaturllyLastReadDocumentID")
+            defaults.set(document.name, forKey: "NaturllyLastReadDocumentName")
+        } else {
+            defaults.removeObject(forKey: "NaturllyLastReadDocumentID")
+            defaults.removeObject(forKey: "NaturllyLastReadDocumentName")
+        }
+
+        defaults.set(lastReadSectionIndex, forKey: "NaturllyLastReadSectionIndex")
+        defaults.set(lastPlaybackPosition, forKey: "NaturllyLastPlaybackPosition")
+        defaults.set(canContinueReading, forKey: "NaturllyCanContinueReading")
+        defaults.set(selectedLanguage.code, forKey: "NaturllyLastLanguageCode")
+        defaults.set(bookMode, forKey: "NaturllyBookMode")
+        defaults.set(useVertexVoices, forKey: "UseVertexVoices")
+
+        if let voice = selectedVoice {
+            defaults.set(voice.id, forKey: "NaturllyLastVoiceID")
+            defaults.set(voice.languageCode, forKey: "NaturllyLastVoiceLanguageCode")
+            defaults.set(voice.name, forKey: "NaturllyLastVoiceName")
+        } else {
+            defaults.removeObject(forKey: "NaturllyLastVoiceID")
+            defaults.removeObject(forKey: "NaturllyLastVoiceLanguageCode")
+            defaults.removeObject(forKey: "NaturllyLastVoiceName")
+        }
+    }
+
+    private func restoreReadingSession() {
+        let defaults = UserDefaults.standard
+
+        if let languageCode = defaults.string(forKey: "NaturllyLastLanguageCode") {
+            if let language = TTSLanguage.availableLanguages.first(where: { $0.code == languageCode }) {
+                selectedLanguage = language
+            }
+        }
+
+        if let voiceID = defaults.string(forKey: "NaturllyLastVoiceID"),
+           let languageCode = defaults.string(forKey: "NaturllyLastVoiceLanguageCode") {
+            selectedVoice = TTSVoice.getVoices(for: languageCode).first(where: { $0.id == voiceID })
+        } else {
+            selectedVoice = nil
+        }
+
+        if defaults.object(forKey: "NaturllyBookMode") != nil {
+            bookMode = defaults.bool(forKey: "NaturllyBookMode")
+        }
+
+        if defaults.object(forKey: "NaturllyLastReadDocumentID") != nil,
+           let documentID = defaults.string(forKey: "NaturllyLastReadDocumentID") {
+            if let savedDocument = documents.first(where: { $0.id.uuidString == documentID }) {
+                selectedDocument = savedDocument
+                lastReadDocument = savedDocument
+                canContinueReading = defaults.bool(forKey: "NaturllyCanContinueReading")
+                lastReadSectionIndex = defaults.integer(forKey: "NaturllyLastReadSectionIndex")
+                lastPlaybackPosition = defaults.double(forKey: "NaturllyLastPlaybackPosition")
+
+                if savedDocument.hasSections && !savedDocument.sections.isEmpty {
+                    sectionsQueue = savedDocument.sections
+                    currentSectionIndex = min(max(lastReadSectionIndex, 0), sectionsQueue.count - 1)
+                    if currentSectionIndex >= 0 {
+                        let section = sectionsQueue[currentSectionIndex]
+                        text = cleanedText(from: savedDocument.getSectionText(section))
+                    }
+                }
+            }
+        }
+    }
+
     private func continueReading() {
         guard let document = lastReadDocument else { return }
-        
+
         // Restaurar el documento
         selectedDocument = document
-        
+
         // Si tiene secciones, restaurar la cola y el índice
         if document.hasSections && !document.sections.isEmpty {
             sectionsQueue = document.sections
             currentSectionIndex = lastReadSectionIndex
-            
+
             // Cargar el texto de la sección actual
             if currentSectionIndex < sectionsQueue.count {
                 let section = sectionsQueue[currentSectionIndex]
                 let rawText = document.getSectionText(section)
                 // Limpiar el texto antes de generar audio
                 text = cleanedText(from: rawText)
-                
+
                 // Habilitar reproducción continua
                 autoPlaySections = true
             }
@@ -1085,11 +1158,11 @@ struct ContentView: View {
             // Documento sin secciones, cargar todo el texto
             text = cleanedText(from: document.text)
         }
-        
+
         // Generar audio y reanudar desde la posición guardada
         Task {
             await generateSpeech()
-            
+
             // Después de generar, buscar la posición guardada
             if let data = audioData, lastPlaybackPosition > 0 {
                 audioPlayer.nowPlayingTitle = buildNowPlayingTitle()
