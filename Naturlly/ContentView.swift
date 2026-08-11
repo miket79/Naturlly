@@ -592,6 +592,7 @@ struct ContentView: View {
         }
         .onAppear {
             loadAPIKey()
+            loadPersistedDocuments()
             restoreReadingSession()
             setupAudioCallback()
         }
@@ -1199,6 +1200,14 @@ struct ContentView: View {
             useSSMLPauses = true // Activado por defecto
         }
     }
+
+    private func loadPersistedDocuments() {
+        do {
+            documents = try DocumentPersistence.loadDocuments()
+        } catch {
+            print("❌ Error cargando documentos persistidos: \(error.localizedDescription)")
+        }
+    }
     
     private func saveAnalysisPreference() {
         UserDefaults.standard.set(useNaturalAnalysis, forKey: "UseNaturalAnalysis")
@@ -1359,6 +1368,11 @@ struct DocumentListView: View {
     
     private func deleteDocuments(at offsets: IndexSet) {
         documents.remove(atOffsets: offsets)
+        do {
+            try DocumentPersistence.saveDocuments(documents)
+        } catch {
+            print("❌ Error guardando cambios en documentos: \(error.localizedDescription)")
+        }
     }
 }
 

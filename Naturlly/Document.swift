@@ -69,3 +69,29 @@ struct Document: Identifiable, Codable {
         return String(text[startIndex..<endIndex])
     }
 }
+
+enum DocumentPersistence {
+    private static let fileName = "NaturllyDocuments.json"
+
+    private static var storageURL: URL {
+        let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return baseURL.appendingPathComponent(fileName)
+    }
+
+    static func saveDocuments(_ documents: [Document]) throws {
+        let directory = storageURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        let data = try JSONEncoder().encode(documents)
+        try data.write(to: storageURL, options: .atomic)
+    }
+
+    static func loadDocuments() throws -> [Document] {
+        guard FileManager.default.fileExists(atPath: storageURL.path) else {
+            return []
+        }
+
+        let data = try Data(contentsOf: storageURL)
+        return try JSONDecoder().decode([Document].self, from: data)
+    }
+}
