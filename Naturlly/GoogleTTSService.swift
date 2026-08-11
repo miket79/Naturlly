@@ -2,25 +2,40 @@
 //  GoogleTTSService.swift
 //  Naturlly TTS
 //
-//  Service to interact with Google Cloud Text-to-Speech API
+//  Google Cloud Text-to-Speech (v1) client
 //
 
 import Foundation
 import AVFoundation
+import os
 
 class GoogleTTSService {
+    // Cloud Text-to-Speech endpoint
+    private let endpoint = "https://texttospeech.googleapis.com/v1/text:synthesize"
     private let apiKey: String
-    private let useVertex: Bool
-    private let maxBytesPerRequest = 4500 // Límite de 5000, usamos 4500 para margen
-    var useSSMLPauses: Bool = true // Habilitar pausas automáticas en comas y puntos
+    private let maxBytesPerRequest = 4500 // límite de seguridad para TTS clásico (UTF-8 bytes)
+    var useSSMLPauses: Bool = false // Gemini TTS no requiere SSML en esta integración
     
-    private var synthesizeURLString: String {
-        useVertex ? "https://texttospeech.googleapis.com/v1beta1/text:synthesize" : "https://texttospeech.googleapis.com/v1/text:synthesize"
+    private func buildSSML(from text: String) -> String {
+        // Limpieza básica para SSML
+        var ssml = text
+        // Escapar caracteres especiales mínimos
+        ssml = ssml.replacingOccurrences(of: "&", with: "&amp;")
+                   .replacingOccurrences(of: "<", with: "&lt;")
+                   .replacingOccurrences(of: ">", with: "&gt;")
+
+        // Pausas cortas en comas y medias en puntos
+        // Nota: Evitamos duplicar signos; trabajamos sobre espacios
+        ssml = ssml.replacingOccurrences(of: ", ", with: ", <break time=\"200ms\"/> ")
+        ssml = ssml.replacingOccurrences(of: ". ", with: ". <break time=\"400ms\"/> ")
+        ssml = ssml.replacingOccurrences(of: "? ", with: "? <break time=\"400ms\"/> ")
+        ssml = ssml.replacingOccurrences(of: "! ", with: "! <break time=\"400ms\"/> ")
+
+        return "<speak>\n\(ssml)\n</speak>"
     }
     
     init(apiKey: String, useVertex: Bool = false) {
         self.apiKey = apiKey
-        self.useVertex = useVertex
     }
     
     func synthesizeSpeech(
@@ -30,20 +45,12 @@ class GoogleTTSService {
         pitch: Double = 0.0,
         voice: TTSVoice? = nil
     ) async throws -> Data {
+        guard !text.isEmpty else { throw TTSError.emptyText }
+        guard !apiKey.isEmpty else { throw TTSError.missingAPIKey }
         
-        guard !text.isEmpty else {
-            throw TTSError.emptyText
-        }
-        
-        guard !apiKey.isEmpty else {
-            throw TTSError.missingAPIKey
-        }
-        
-        // Check text size
         let textData = Data(text.utf8)
-        
-        // If text is within limit, process normally
-        if textData.count <= maxBytesPerRequest {
+        let limit = TextChunker.effectiveMaxBytes(base: TextChunker.maxBytes, marginPercent: useSSMLPauses ? 10 : 0, overheadBytes: useSSMLPauses ? 200 : 0)
+        if textData.count <= limit {
             return try await synthesizeSingleRequest(
                 text: text,
                 language: language,
@@ -53,7 +60,6 @@ class GoogleTTSService {
             )
         }
         
-        // Text is too long, split and merge
         return try await synthesizeLongText(
             text: text,
             language: language,
@@ -65,70 +71,6 @@ class GoogleTTSService {
 
     
     
-    // MARK: - SSML Processing
-    private func addSSMLPauses(_ text: String) -> String {
-        guard useSSMLPauses else { return text }
-        
-        var processedText = text
-        
-        // Agregar pausas solo cuando los signos están seguidos de espacio o fin de línea
-        // Esto evita pausas en números decimales, URLs, etc.
-        
-        // Comas seguidas de espacio (300ms)
-        processedText = processedText.replacingOccurrences(
-            of: ", ",
-            with: ",<break time=\"300ms\"/> "
-        )
-        
-        // Puntos seguidos de espacio o fin de línea (500ms)
-        // Primero puntos con espacio
-        processedText = processedText.replacingOccurrences(
-            of: ". ",
-            with: ".<break time=\"500ms\"/> "
-        )
-        // Luego puntos al final de línea
-        processedText = processedText.replacingOccurrences(
-            of: ".\n",
-            with: ".<break time=\"500ms\"/>\n"
-        )
-        
-        // Punto y coma con espacio (400ms)
-        processedText = processedText.replacingOccurrences(
-            of: "; ",
-            with: ";<break time=\"400ms\"/> "
-        )
-        
-        // Dos puntos con espacio (350ms)
-        processedText = processedText.replacingOccurrences(
-            of: ": ",
-            with: ":<break time=\"350ms\"/> "
-        )
-        
-        // Interrogación con espacio o fin de línea (500ms)
-        processedText = processedText.replacingOccurrences(
-            of: "? ",
-            with: "?<break time=\"500ms\"/> "
-        )
-        processedText = processedText.replacingOccurrences(
-            of: "?\n",
-            with: "?<break time=\"500ms\"/>\n"
-        )
-        
-        // Exclamación con espacio o fin de línea (500ms)
-        processedText = processedText.replacingOccurrences(
-            of: "! ",
-            with: "!<break time=\"500ms\"/> "
-        )
-        processedText = processedText.replacingOccurrences(
-            of: "!\n",
-            with: "!<break time=\"500ms\"/>\n"
-        )
-        
-        // Envolver en SSML
-        return "<speak>\(processedText)</speak>"
-    }
-
-
     // MARK: - Single Request (for short texts)
     private func synthesizeSingleRequest(
         text: String,
@@ -137,84 +79,61 @@ class GoogleTTSService {
         pitch: Double,
         voice: TTSVoice?
     ) async throws -> Data {
-        
-        // Determine which voice to use
-        let selectedVoice = voice ?? TTSVoice.getVoices(for: language.code).first ?? TTSVoice(
-            id: language.voiceName,
-            name: language.voiceName,
-            languageCode: language.code,
-            gender: .female,
-            type: .standard
-        )
-        
-        // Procesar texto con SSML si está habilitado
-        let processedText = useSSMLPauses ? addSSMLPauses(text) : text
-        
-        // Construct request
-        let request = TTSRequest(
-            input: useSSMLPauses ? TTSRequest.TextInput(ssml: processedText) : TTSRequest.TextInput(text: text),
-            voice: TTSRequest.VoiceSelection(
-                languageCode: selectedVoice.languageCode,
-                name: selectedVoice.name
-            ),
-            audioConfig: TTSRequest.AudioConfig(
-                audioEncoding: "MP3",
-                speakingRate: speakingRate,
-                pitch: pitch
-            )
-        )
-        
-        // Create URL with API key
-        guard var urlComponents = URLComponents(string: synthesizeURLString) else {
+        guard var urlComponents = URLComponents(string: endpoint) else {
             throw TTSError.invalidURL
         }
         urlComponents.queryItems = [URLQueryItem(name: "key", value: apiKey)]
-        
         guard let url = urlComponents.url else {
             throw TTSError.invalidURL
         }
-        
-        // Configure HTTP request
+
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // Encode request body
-        let encoder = JSONEncoder()
-        urlRequest.httpBody = try encoder.encode(request)
-        
-        // Execute request
+
+        // Use provided voice name (e.g., gemini-1.5-pro-001-tts) or fallback to language default
+        let voiceSelection = ClassicTTSRequest.VoiceSelectionParams(
+            languageCode: voice?.languageCode ?? language.code,
+            name: voice?.name ?? language.voiceName
+        )
+        let audioConfig = ClassicTTSRequest.AudioConfig(
+            audioEncoding: "MP3",
+            speakingRate: speakingRate,
+            pitch: pitch
+        )
+
+        let input: ClassicTTSRequest.Input
+        if useSSMLPauses {
+            input = .init(ssml: buildSSML(from: text))
+        } else {
+            input = .init(text: text)
+        }
+        let body = ClassicTTSRequest(
+            input: input,
+            voice: voiceSelection,
+            audioConfig: audioConfig
+        )
+        urlRequest.httpBody = try JSONEncoder().encode(body)
+
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        
-        // Validate response
         guard let httpResponse = response as? HTTPURLResponse else {
             throw TTSError.invalidResponse
         }
-        
         guard httpResponse.statusCode == 200 else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-            
-            // Enhanced error messages for common issues
-            if httpResponse.statusCode == 403 {
-                throw TTSError.forbidden
-            } else if httpResponse.statusCode == 429 {
-                throw TTSError.quotaExceeded
-            } else if httpResponse.statusCode == 400 {
-                throw TTSError.badRequest(message: errorMessage)
-            } else {
-                throw TTSError.apiError(statusCode: httpResponse.statusCode, message: errorMessage)
+            switch httpResponse.statusCode {
+            case 401, 403: throw TTSError.forbidden
+            case 429: throw TTSError.quotaExceeded
+            case 400: throw TTSError.badRequest(message: errorMessage)
+            default: throw TTSError.apiError(statusCode: httpResponse.statusCode, message: errorMessage)
             }
         }
-        
-        // Decode response
+
         let decoder = JSONDecoder()
-        let ttsResponse = try decoder.decode(TTSResponse.self, from: data)
-        
-        // Decode base64 audio content
-        guard let audioData = Data(base64Encoded: ttsResponse.audioContent) else {
+        let ttsResponse = try decoder.decode(ClassicTTSResponse.self, from: data)
+        guard let audioContent = ttsResponse.audioContent, let audioData = Data(base64Encoded: audioContent) else {
             throw TTSError.invalidAudioData
         }
-        
         return audioData
     }
     
@@ -228,7 +147,7 @@ class GoogleTTSService {
     ) async throws -> Data {
         
         // Split text into chunks
-        let chunks = splitTextIntoChunks(text: text, maxBytes: maxBytesPerRequest)
+        let chunks = TextChunker.split(text, maxBytes: TextChunker.maxBytes, marginPercent: useSSMLPauses ? 10 : 0, overheadBytes: useSSMLPauses ? 200 : 0)
         
         guard !chunks.isEmpty else {
             throw TTSError.emptyText
@@ -257,89 +176,7 @@ class GoogleTTSService {
         }
         
         // Merge audio chunks
-        return try mergeMP3Data(chunks: audioChunks)
-    }
-    
-    // MARK: - Text Splitting
-    private func splitTextIntoChunks(text: String, maxBytes: Int) -> [String] {
-        var chunks: [String] = []
-        var currentChunk = ""
-        
-        // Split by sentences first (by period, exclamation, question mark)
-        let sentences = text.components(separatedBy: CharacterSet(charactersIn: "!?¿¡"))
-        
-        for sentence in sentences {
-            let trimmedSentence = sentence.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            if trimmedSentence.isEmpty {
-                continue
-            }
-            
-            // Add punctuation back
-            let sentenceWithPunctuation = trimmedSentence + "."
-            
-            // Check if adding this sentence would exceed the limit
-            let testChunk = currentChunk.isEmpty ? sentenceWithPunctuation : currentChunk + " " + sentenceWithPunctuation
-            let testData = Data(testChunk.utf8)
-            
-            if testData.count > maxBytes {
-                // Current chunk is full, save it
-                if !currentChunk.isEmpty {
-                    chunks.append(currentChunk)
-                }
-                
-                // Check if single sentence is too long
-                let sentenceData = Data(sentenceWithPunctuation.utf8)
-                if sentenceData.count > maxBytes {
-                    // Split long sentence by words
-                    let subChunks = splitLongSentence(sentence: sentenceWithPunctuation, maxBytes: maxBytes)
-                    chunks.append(contentsOf: subChunks)
-                    currentChunk = ""
-                } else {
-                    currentChunk = sentenceWithPunctuation
-                }
-            } else {
-                // Add sentence to current chunk
-                if currentChunk.isEmpty {
-                    currentChunk = sentenceWithPunctuation
-                } else {
-                    currentChunk += " " + sentenceWithPunctuation
-                }
-            }
-        }
-        
-        // Add remaining chunk
-        if !currentChunk.isEmpty {
-            chunks.append(currentChunk)
-        }
-        
-        return chunks
-    }
-    
-    private func splitLongSentence(sentence: String, maxBytes: Int) -> [String] {
-        var chunks: [String] = []
-        let words = sentence.split(separator: " ")
-        var currentChunk = ""
-        
-        for word in words {
-            let testChunk = currentChunk.isEmpty ? String(word) : currentChunk + " " + String(word)
-            let testData = Data(testChunk.utf8)
-            
-            if testData.count > maxBytes {
-                if !currentChunk.isEmpty {
-                    chunks.append(currentChunk)
-                }
-                currentChunk = String(word)
-            } else {
-                currentChunk = testChunk
-            }
-        }
-        
-        if !currentChunk.isEmpty {
-            chunks.append(currentChunk)
-        }
-        
-        return chunks
+        return mergeMP3Data(chunks: audioChunks)
     }
     
     // MARK: - Audio Merging
@@ -353,6 +190,35 @@ class GoogleTTSService {
         
         return mergedData
     }
+}
+
+// Classic Cloud TTS models
+private struct ClassicTTSRequest: Codable {
+    let input: Input
+    let voice: VoiceSelectionParams
+    let audioConfig: AudioConfig
+    
+    struct Input: Codable {
+        let text: String?
+        let ssml: String?
+        init(text: String) { self.text = text; self.ssml = nil }
+        init(ssml: String) { self.text = nil; self.ssml = ssml }
+    }
+    
+    struct VoiceSelectionParams: Codable {
+        let languageCode: String
+        let name: String?
+    }
+    
+    struct AudioConfig: Codable {
+        let audioEncoding: String
+        let speakingRate: Double
+        let pitch: Double
+    }
+}
+
+private struct ClassicTTSResponse: Codable {
+    let audioContent: String?
 }
 
 enum TTSError: LocalizedError {
@@ -371,7 +237,7 @@ enum TTSError: LocalizedError {
         case .emptyText:
             return "El texto no puede estar vacío"
         case .missingAPIKey:
-            return "La clave API de Google no está configurada"
+            return "La clave API no está configurada"
         case .invalidURL:
             return "URL inválida"
         case .invalidResponse:
@@ -380,25 +246,21 @@ enum TTSError: LocalizedError {
             return "No se pudo decodificar el audio"
         case .forbidden:
             return """
-            Error 403: Acceso Denegado
+            Error 403: Acceso denegado
             
             Posibles causas:
-            • La API Key no es válida
-            • La API de Text-to-Speech no está habilitada
-            • La API Key tiene restricciones que bloquean esta app
+            • API Key inválida o sin permisos para Generative Language API
+            • Restricciones de clave (IP, app bundle) impiden la llamada
             
-            Solución:
-            1. Ve a console.cloud.google.com
-            2. Verifica que "Cloud Text-to-Speech API" esté habilitada
-            3. En "Credentials", verifica tu API Key
-            4. Si tiene restricciones, agrégala o crea una nueva sin restricciones
+            Revisa la consola de Google Cloud: habilita "Generative Language API"
+            y verifica que la clave no tenga restricciones que bloqueen la app.
             """
         case .quotaExceeded:
             return """
             Error 429: Cuota Excedida
             
-            Has superado el límite gratuito de 4 millones de caracteres/mes.
-            Espera unos minutos o revisa tu cuota en Google Cloud Console.
+            Se alcanzó el límite de peticiones/cuota. Intenta más tarde o revisa
+            los límites de uso del proyecto en Google Cloud.
             """
         case .badRequest(let message):
             return "Solicitud inválida: \(message)"
@@ -407,4 +269,5 @@ enum TTSError: LocalizedError {
         }
     }
 }
+
 

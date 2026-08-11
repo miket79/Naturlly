@@ -2,11 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>processing</string>
 		<string>fetch</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+		<string>location</string>
+		<string>push-to-talk</string>
+		<string>remote-notification</string>
+		<string>bluetooth-central</string>
+		<string>nearby-interaction</string>
+		<string>voip</string>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>google_client.plist</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
 	</array>
 </dict>
 </plist>

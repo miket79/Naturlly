@@ -1,0 +1,114 @@
+/* ---- General ---- */
+"app.name" = "Naturlly TTS";
+"btn.save" = "Save";
+"btn.cancel" = "Cancel";
+"btn.close" = "Close";
+"btn.test" = "Test";
+"btn.delete" = "Delete";
+"btn.default" = "Default";
+"status.not_tested" = "Not tested yet";
+
+/* ---- Tab bar ---- */
+"tab.tts" = "TTS";
+"tab.library" = "Library";
+
+/* ---- ContentView ---- */
+"cv.continue_reading" = "Continue Reading";
+"cv.section_of" = "Section %lld of %lld";
+"cv.setup_api_key" = "Set up your API Key";
+"cv.setup_api_key_desc" = "You need a Google Cloud Text-to-Speech API key";
+"cv.setup_btn" = "Set Up";
+"cv.import_doc" = "Import PDF/EPUB";
+"cv.doc_stats" = "%lld characters • %lld words";
+"cv.index_btn" = "Index";
+"cv.text_section_title_doc" = "Document text";
+"cv.text_section_title_free" = "Text to convert";
+"cv.restore_last" = "Restore last text";
+"cv.language" = "Language";
+"cv.voice" = "Voice";
+"cv.auto_voice" = "Auto voice";
+"cv.tap_to_choose" = "(Tap to choose)";
+"cv.voice_gender_male" = "Male";
+"cv.voice_gender_female" = "Female";
+"cv.smart_analysis" = "Smart Analysis";
+"cv.smart_analysis_desc" = "Automatically adjusts tone and speed based on content";
+"cv.natural_pauses" = "Natural Pauses";
+"cv.natural_pauses_desc" = "Adds automatic pauses at commas and periods";
+"cv.speed" = "Speed";
+"cv.pitch" = "Pitch";
+"cv.voice_settings" = "Voice settings";
+"cv.voice_settings_summary" = "Speed: %@ | Pitch: %@";
+"cv.book_mode" = "Book Mode";
+"cv.book_mode_preload_on" = "Preload enabled ⚡️";
+"cv.book_mode_preload_off" = "Generate on demand";
+"cv.generate_audio" = "Generate Audio";
+"cv.generating" = "Generating...";
+"cv.book_mode_active" = "Book Mode Active";
+"cv.sections_preloaded" = "%lld sections preloaded";
+"cv.preloading_sections" = "Preloading next sections...";
+"cv.nav_title" = "Naturlly TTS";
+
+/* ---- SettingsView ---- */
+"settings.nav_title" = "Settings";
+"settings.section_gcloud" = "Google Cloud TTS";
+"settings.api_key_label" = "API Key";
+"settings.api_key_placeholder" = "Enter your Google Cloud API Key";
+"settings.api_key_hint" = "Get your key at Google Cloud Console > APIs & Services > Credentials";
+"settings.vertex_toggle" = "Use Vertex AI voices";
+"settings.long_audio_section" = "Long Audio Service (Cloud Run)";
+"settings.backend_url_label" = "Backend URL";
+"settings.backend_url_hint" = "URL of your Cloud Run service running the long audio backend";
+"settings.gcs_bucket_label" = "Google Cloud Storage Bucket";
+"settings.gcs_bucket_hint" = "GCS bucket mounted in the Cloud Run service (app-data-bucket)";
+"settings.long_audio_toggle" = "Use Long Audio Service";
+"settings.service_info_title" = "ℹ️ Service Information";
+"settings.service_info_desc" = "When enabled, long texts are processed on your Cloud Run service using LongAudioTTSService. The GCS bucket is mounted as a file system, enabling efficient high-quality audio processing for very long texts.";
+"settings.connectivity_section" = "Connectivity Tests";
+"settings.connectivity_desc" = "Verify your configuration works correctly";
+"settings.backend_vm" = "Backend VM";
+"settings.gcs_bucket_test" = "GCS Bucket";
+"settings.config_status_section" = "Configuration Status";
+"settings.api_key_configured" = "API Key configured";
+"settings.backend_configured" = "Backend URL configured";
+"settings.bucket_configured" = "GCS Bucket configured";
+"settings.long_audio_enabled" = "Long audio service enabled";
+"settings.instructions_section" = "Setup Instructions";
+
+/* ---- LibraryView ---- */
+"library.nav_title" = "Library";
+"library.empty" = "No documents";
+"library.empty_desc" = "Import a PDF/EPUB from the TTS tab";
+"library.doc_stats" = "%lld words · %lld pages";
+"library.delete_alert_title" = "Delete document";
+"library.delete_confirm" = "Are you sure you want to delete %@? This action cannot be undone.";
+
+/* ---- VoicePickerView ---- */
+"voice_picker.nav_title" = "Select Voice";
+"voice_picker.loading" = "Loading voices...";
+"voice_picker.empty" = "No voices available";
+"voice_picker.empty_desc" = "No voices found for this language";
+"voice_picker.favorites" = "Favorites";
+"voice_picker.wavenet_footer" = "WaveNet: Superior quality with a more natural sound";
+"voice_picker.neural2_footer" = "Neural2: Latest generation with maximum naturalness";
+
+/* ---- DocumentSectionsView ---- */
+"sections.full_doc_section" = "Full document";
+"sections.read_all" = "Read entire document";
+"sections.sections_header" = "Sections";
+"sections.char_count" = "%lld characters";
+
+/* ---- DocumentPresentationView ---- */
+"presentation.nav_title" = "Presentation";
+"presentation.section_nav_title" = "Section";
+"presentation.index" = "Index";
+"presentation.no_index" = "No index detected";
+"presentation.no_index_desc" = "This document will be read in full";
+"presentation.est_time_min" = "Estimated time: %lld minutes";
+"presentation.est_time_hm" = "Estimated time: %lldh %lldm";
+"presentation.last_read" = "Last read";
+"presentation.preview" = "Preview";
+"presentation.convert_audio" = "Convert to audio";
+"presentation.full_text" = "View full text";
+
+/* ---- DocumentCoverView ---- */
+"cover.accessibility" = "Cover of %@";

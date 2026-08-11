@@ -32,31 +32,54 @@ struct TTSVoice: Identifiable, Hashable, Codable {
     let languageCode: String
     let gender: VoiceGender
     let type: VoiceType
-    
+    var isFavorite: Bool = false
+
+    // Nombre simplificado: extrae tipo y sufijo (A, B, C...) y muestra género con icono
+    var simpleName: String {
+        // Simplify names like "es-ES-Standard-A" -> "Standard A"
+        // or "en-US-WaveNet-C" -> "WaveNet C"
+        // Keep a fallback to original name if pattern not matched
+        let components = name.split(separator: "-").map(String.init)
+        let knownTypes = ["Standard", "WaveNet", "Neural2", "Studio", "Journey", "News"]
+        if let typeIndex = components.firstIndex(where: { knownTypes.contains($0) }) {
+            let rest = components[typeIndex...]
+            return rest.joined(separator: " ")
+        }
+        if components.count >= 3 {
+            let rest = components.dropFirst(2)
+            return rest.joined(separator: " ")
+        }
+        return name
+    }
+
+    // Nombre para UI: incluye icono de favorito si aplica
     var displayName: String {
         let genderIcon = gender == .male ? "♂" : (gender == .female ? "♀" : "⚪")
-        return "\(genderIcon) \(name) (\(type.displayName))"
+        let favorite = isFavorite ? "★ " : ""
+        return "\(favorite)\(genderIcon) \(simpleName)"
     }
-    
+
     enum CodingKeys: String, CodingKey {
-        case id, name, languageCode, gender
+        case id, name, languageCode, gender, isFavorite
     }
-    
-    init(id: String, name: String, languageCode: String, gender: VoiceGender, type: VoiceType) {
+
+    init(id: String, name: String, languageCode: String, gender: VoiceGender, type: VoiceType, isFavorite: Bool = false) {
         self.id = id
         self.name = name
         self.languageCode = languageCode
         self.gender = gender
         self.type = type
+        self.isFavorite = isFavorite
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         languageCode = try container.decode(String.self, forKey: .languageCode)
         gender = try container.decode(VoiceGender.self, forKey: .gender)
-        
+        isFavorite = (try? container.decode(Bool.self, forKey: .isFavorite)) ?? false
+
         // Determine type from name
         if name.contains("WaveNet") {
             type = .wavenet
@@ -72,13 +95,14 @@ struct TTSVoice: Identifiable, Hashable, Codable {
             type = .standard
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
         try container.encode(languageCode, forKey: .languageCode)
         try container.encode(gender, forKey: .gender)
+        try container.encode(isFavorite, forKey: .isFavorite)
     }
 }
 
@@ -215,6 +239,7 @@ extension TTSVoice {
         } else {
             type = .standard
         }
-        return TTSVoice(id: name, name: name, languageCode: languageCode, gender: gender, type: type)
+        return TTSVoice(id: name, name: name, languageCode: languageCode, gender: gender, type: type, isFavorite: false)
     }
 }
+

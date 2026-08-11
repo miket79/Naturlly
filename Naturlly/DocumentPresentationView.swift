@@ -64,16 +64,11 @@ struct DocumentPresentationView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                Color(red: 0.07, green: 0.08, blue: 0.1)
+                    .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: 20) {
                         // Document Header
                         DocumentHeaderView(document: document)
                         
@@ -82,7 +77,7 @@ struct DocumentPresentationView: View {
                             HStack {
                                 Image(systemName: "list.bullet.rectangle")
                                     .foregroundColor(.blue)
-                                Text("Índice")
+                                Text(String(localized: "presentation.index"))
                                     .font(.title2)
                                     .fontWeight(.bold)
                             }
@@ -111,11 +106,11 @@ struct DocumentPresentationView: View {
                                         .font(.system(size: 48))
                                         .foregroundColor(.gray)
                                     
-                                    Text("Sin índice detectado")
+                                    Text(String(localized: "presentation.no_index"))
                                         .font(.headline)
                                         .foregroundColor(.secondary)
                                     
-                                    Text("Este documento se leerá completo")
+                                    Text(String(localized: "presentation.no_index_desc"))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     
@@ -140,7 +135,7 @@ struct DocumentPresentationView: View {
                     }
                 }
             }
-            .navigationTitle("Presentación")
+            .navigationTitle(String(localized: "presentation.nav_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -158,7 +153,7 @@ struct DocumentPresentationView: View {
                     }
                 }
             }
-
+            .tint(.cyan)
         }
     }
     
@@ -189,23 +184,10 @@ struct DocumentHeaderView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            // Document Icon
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.blue, Color.purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 120, height: 120)
-                    .shadow(color: .blue.opacity(0.3), radius: 20, x: 0, y: 10)
-                
-                Image(systemName: document.type.icon)
-                    .font(.system(size: 50))
-                    .foregroundColor(.white)
-            }
+            // Document cover art
+            DocumentCoverView(document: document, size: CGSize(width: 150, height: 180))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .shadow(color: .black.opacity(0.35), radius: 12, x: 0, y: 8)
             
             // Document Title
             Text(document.name)
@@ -285,11 +267,11 @@ struct ReadingTimeView: View {
                 .foregroundColor(.orange)
             
             if estimatedMinutes < 60 {
-                Text("Tiempo estimado: \(estimatedMinutes) minutos")
+                Text(String(format: String(localized: "presentation.est_time_min"), estimatedMinutes))
             } else {
                 let hours = estimatedMinutes / 60
                 let minutes = estimatedMinutes % 60
-                Text("Tiempo estimado: \(hours)h \(minutes)m")
+                Text(String(format: String(localized: "presentation.est_time_hm"), hours, minutes))
             }
         }
         .font(.subheadline)
@@ -352,7 +334,7 @@ struct PresentationSectionRowView: View {
                     
                     if isLastRead {
                         Spacer()
-                        Text("Última lectura")
+                        Text(String(localized: "presentation.last_read"))
                             .font(.caption2)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
@@ -446,7 +428,7 @@ struct SectionReaderView: View {
                     
                     // Section Text Preview
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Vista previa")
+                        Text(String(localized: "presentation.preview"))
                             .font(.headline)
                             .foregroundColor(.secondary)
                         
@@ -466,7 +448,7 @@ struct SectionReaderView: View {
                         }) {
                             HStack {
                                 Image(systemName: "speaker.wave.3.fill")
-                                Text("Convertir a audio")
+                                Text(String(localized: "presentation.convert_audio"))
                                     .fontWeight(.semibold)
                             }
                             .frame(maxWidth: .infinity)
@@ -488,7 +470,7 @@ struct SectionReaderView: View {
                         }) {
                             HStack {
                                 Image(systemName: "text.alignleft")
-                                Text("Ver texto completo")
+                                Text(String(localized: "presentation.full_text"))
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -503,7 +485,7 @@ struct SectionReaderView: View {
                 .padding()
             }
         }
-        .navigationTitle("Sección")
+        .navigationTitle(String(localized: "presentation.section_nav_title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {

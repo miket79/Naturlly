@@ -9,7 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var audioPlayer: AudioPlayerManager
-    @State private var text: String = ""
+    @Binding var documents: [Document]
+    @Binding var selectedDocument: Document?
+    @Binding var text: String
+    @Binding var selectedSection: DocumentSection?
+    @Binding var showSections: Bool
+    
     @State private var selectedLanguage = TTSLanguage.availableLanguages[0]
     @State private var selectedVoice: TTSVoice? = nil
     @State private var showVoicePicker = false
@@ -20,21 +25,20 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var apiKey: String = (UserDefaults.standard.string(forKey: "GoogleTTSAPIKey") ?? APIConfig.defaultGoogleTTSAPIKey)
     @State private var audioData: Data?
-    @State private var documents: [Document] = []
     @State private var showDocumentPicker = false
-    @State private var selectedDocument: Document?
-    @State private var showDocuments = false
-    @State private var selectedSection: DocumentSection?
-    @State private var showSections = false
     @State private var useNaturalAnalysis: Bool = false
     @State private var analysisResult: String?
     @State private var useSSMLPauses: Bool = true
-    @State private var showDocumentPresentation = false
     @State private var presentationDocument: Document?
     @State private var currentSectionIndex: Int = 0
     @State private var autoPlaySections: Bool = false
     @State private var sectionsQueue: [DocumentSection] = []
     @State private var useVertexVoices: Bool = UserDefaults.standard.bool(forKey: "UseVertexVoices")
+    @State private var useLongAudioService: Bool = UserDefaults.standard.bool(forKey: APIConfig.useLongAudioServiceKey)
+    @State private var backendURL: String = UserDefaults.standard.string(forKey: APIConfig.backendURLKey) ?? APIConfig.defaultBackendURL
+    @State private var gcsBucket: String = UserDefaults.standard.string(forKey: APIConfig.gcsBucketKey) ?? APIConfig.defaultGCSBucket
+    @State private var progressLoaded: Bool = false
+    @AppStorage("draftTextBackup") private var draftTextBackup: String = ""
     
     // Estados para continuidad de lectura
     @State private var lastReadDocument: Document?
@@ -50,7 +54,7 @@ struct ContentView: View {
     @State private var preloadProgress: Double = 0.0
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     // Continuar Lectura Button
@@ -63,7 +67,7 @@ struct ContentView: View {
                                     HStack {
                                         Image(systemName: "play.circle.fill")
                                             .font(.title2)
-                                        Text("Continuar Lectura")
+                                        Text(String(localized: "cv.continue_reading"))
                                             .font(.headline)
                                             .fontWeight(.semibold)
                                     }
@@ -74,7 +78,7 @@ struct ContentView: View {
                                         .lineLimit(1)
                                     
                                     if sectionsQueue.count > 0 && lastReadSectionIndex < sectionsQueue.count {
-                                        Text("Sección \(lastReadSectionIndex + 1) de \(sectionsQueue.count)")
+                                        Text(String(format: String(localized: "cv.section_of"), lastReadSectionIndex + 1, sectionsQueue.count))
                                             .font(.caption)
                                             .foregroundColor(.white.opacity(0.7))
                                     }
@@ -90,13 +94,12 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity)
                             .background(
                                 LinearGradient(
-                                    colors: [Color.green, Color.green.opacity(0.8)],
+                                    colors: [Color.cyan, Color.cyan.opacity(0.7)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .cornerRadius(12)
-                            .shadow(color: Color.green.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .cornerRadius(14)
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -109,16 +112,16 @@ struct ContentView: View {
                                 .font(.system(size: 28))
                                 .foregroundColor(.orange)
                             
-                            Text("Configura tu API Key")
+                            Text(String(localized: "cv.setup_api_key"))
                                 .font(.headline)
                             
-                            Text("Necesitas una clave API de Google Cloud Text-to-Speech")
+                            Text(String(localized: "cv.setup_api_key_desc"))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                             
                             Button(action: { showSettings = true }) {
-                                Label("Configurar", systemImage: "gearshape.fill")
+                                Label(String(localized: "cv.setup_btn"), systemImage: "gearshape.fill")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
@@ -130,28 +133,14 @@ struct ContentView: View {
                         .padding()
                     } else {
                         // Document Import Section
-                        HStack(spacing: 12) {
-                            Button(action: { showDocumentPicker = true }) {
-                                Label("Importar PDF/EPUB", systemImage: "doc.badge.plus")
-                                    .font(.subheadline)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .background(Color.green)
-                                    .cornerRadius(8)
-                            }
-                            
-                            if !documents.isEmpty {
-                                Button(action: { showDocuments = true }) {
-                                    Label("Mis Documentos (\(documents.count))", systemImage: "folder.fill")
-                                        .font(.subheadline)
-                                        .foregroundColor(.white)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 10)
-                                        .background(Color.blue)
-                                        .cornerRadius(8)
-                                }
-                            }
+                        Button(action: { showDocumentPicker = true }) {
+                            Label(String(localized: "cv.import_doc"), systemImage: "doc.badge.plus")
+                                .font(.subheadline)
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.cyan)
+                                .cornerRadius(10)
                         }
                         
                         // Show selected document info
@@ -164,6 +153,15 @@ struct ContentView: View {
                                         .font(.subheadline)
                                         .fontWeight(.medium)
                                     Spacer()
+                                    Button {
+                                        presentationDocument = ensureSections(for: doc)
+                                    } label: {
+                                        Label(String(localized: "cv.index_btn"), systemImage: "list.bullet.rectangle")
+                                            .labelStyle(.titleAndIcon)
+                                            .font(.caption)
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .tint(.cyan)
                                     Button(action: {
                                         selectedDocument = nil
                                         text = ""
@@ -173,37 +171,54 @@ struct ContentView: View {
                                     }
                                 }
                                 
-                                Text("\(doc.characterCount) caracteres • \(doc.wordCount) palabras")
+                                Text(String(format: String(localized: "cv.doc_stats"), doc.characterCount, doc.wordCount))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             .padding()
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .cornerRadius(8)
+                            .background(Color(red: 0.14, green: 0.16, blue: 0.2))
+                            .cornerRadius(12)
                         }
                         
                         // Text Input Section
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(selectedDocument != nil ? "Texto del documento" : "Texto a convertir")
+                            Text(selectedDocument != nil ? String(localized: "cv.text_section_title_doc") : String(localized: "cv.text_section_title_free"))
                                 .font(.headline)
                             
                             TextEditor(text: $text)
-                                .frame(height: 120)
-                                .padding(8)
-                                .background(Color(UIColor.secondarySystemBackground))
-                                .cornerRadius(8)
+                                .frame(height: 140)
+                                .padding(10)
+                                .background(Color(red: 0.12, green: 0.13, blue: 0.16))
+                                .cornerRadius(12)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.06), lineWidth: 1)
                                 )
+
+                            if selectedDocument == nil,
+                               !draftTextBackup.isEmpty {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        text = draftTextBackup
+                                        selectedSection = nil
+                                        showSections = false
+                                    } label: {
+                                        Label(String(localized: "cv.restore_last"), systemImage: "arrow.clockwise.circle")
+                                            .font(.caption)
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .tint(.cyan)
+                                }
+                            }
                         }
                         
                         // Language Selection
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Idioma")
+                            Text(String(localized: "cv.language"))
                                 .font(.headline)
                             
-                            Picker("Idioma", selection: $selectedLanguage) {
+                            Picker(String(localized: "cv.language"), selection: $selectedLanguage) {
                                 ForEach(TTSLanguage.availableLanguages) { language in
                                     Text(language.name).tag(language)
                                 }
@@ -219,11 +234,11 @@ struct ContentView: View {
                         // Voice Selection
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Voz")
+                                Text(String(localized: "cv.voice"))
                                     .font(.headline)
                                 Spacer()
                                 if selectedVoice != nil {
-                                    Button("Por defecto") {
+                                    Button(String(localized: "btn.default")) {
                                         selectedVoice = nil
                                     }
                                     .font(.caption)
@@ -240,14 +255,14 @@ struct ContentView: View {
                                             Text(voice.name)
                                                 .font(.subheadline)
                                                 .foregroundColor(.primary)
-                                            Text("\(voice.gender == .male ? "Masculina" : "Femenina") - \(voice.type.displayName)")
+                                            Text("\(voice.gender == .male ? String(localized: "cv.voice_gender_male") : String(localized: "cv.voice_gender_female")) - \(voice.type.displayName)")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
                                         }
                                     } else {
-                                        Text("Voz automática")
+                                        Text(String(localized: "cv.auto_voice"))
                                             .foregroundColor(.primary)
-                                        Text("(Toca para elegir)")
+                                        Text(String(localized: "cv.tap_to_choose"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -268,9 +283,9 @@ struct ContentView: View {
                                     Image(systemName: "brain.head.profile")
                                         .foregroundColor(.purple)
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text("Análisis Inteligente")
+                                        Text(String(localized: "cv.smart_analysis"))
                                             .font(.headline)
-                                        Text("Ajusta automáticamente tono y velocidad según el contenido")
+                                        Text(String(localized: "cv.smart_analysis_desc"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -299,9 +314,9 @@ struct ContentView: View {
                                     Image(systemName: "clock")
                                         .foregroundColor(.orange)
                                     VStack(alignment: .leading, spacing:2) {
-                                        Text("Pausas Naturales")
+                                        Text(String(localized: "cv.natural_pauses"))
                                             .font(.headline)
-                                        Text("Agrega pausas automáticas en comas y puntos")
+                                        Text(String(localized: "cv.natural_pauses_desc"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -320,7 +335,7 @@ struct ContentView: View {
                             VStack(spacing: 12) {
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
-                                        Text("Velocidad")
+                                        Text(String(localized: "cv.speed"))
                                             .font(.subheadline)
                                         Spacer()
                                         Text(String(format: "%.1fx", speakingRate))
@@ -333,7 +348,7 @@ struct ContentView: View {
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
-                                        Text("Tono")
+                                        Text(String(localized: "cv.pitch"))
                                             .font(.subheadline)
                                         Spacer()
                                         Text(String(format: "%.1f", pitch))
@@ -347,10 +362,10 @@ struct ContentView: View {
                             .padding(.top, 8)
                         } label: {
                             HStack {
-                                Text("Ajustes de voz")
+                                Text(String(localized: "cv.voice_settings"))
                                     .font(.headline)
                                 Spacer()
-                                Text("Velocidad: \(String(format: "%.1fx", speakingRate)) | Tono: \(String(format: "%.0f", pitch))")
+                                Text(String(format: String(localized: "cv.voice_settings_summary"), String(format: "%.1fx", speakingRate), String(format: "%.0f", pitch)))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -364,10 +379,10 @@ struct ContentView: View {
                                     Image(systemName: bookMode ? "book.fill" : "book")
                                         .foregroundColor(bookMode ? .green : .gray)
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text("Modo Libro")
+                                        Text(String(localized: "cv.book_mode"))
                                             .font(.subheadline)
                                             .fontWeight(.semibold)
-                                        Text(bookMode ? "Pre-carga activada ⚡️" : "Genera bajo demanda")
+                                        Text(bookMode ? String(localized: "cv.book_mode_preload_on") : String(localized: "cv.book_mode_preload_off"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -387,7 +402,7 @@ struct ContentView: View {
                                 } else {
                                     Image(systemName: "waveform")
                                 }
-                                Text(isLoading ? "Generando..." : "Generar Audio")
+                                Text(isLoading ? String(localized: "cv.generating") : String(localized: "cv.generate_audio"))
                             }
                             .font(.headline)
                             .foregroundColor(.white)
@@ -425,8 +440,35 @@ struct ContentView: View {
                                         .foregroundColor(.secondary)
                                     }
                                     
-                                    // Play/Pause Button
-                                    HStack(spacing: 32) {
+                                    // Section indicator
+                                    if !sectionsQueue.isEmpty {
+                                        Text(String(format: String(localized: "cv.section_of"), currentSectionIndex + 1, sectionsQueue.count))
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    // Play/Pause & Skip Controls
+                                    HStack(spacing: 16) {
+                                        // Previous section
+                                        if !sectionsQueue.isEmpty {
+                                            Button {
+                                                playPreviousSection()
+                                            } label: {
+                                                Image(systemName: "backward.end.fill")
+                                                    .font(.system(size: 24))
+                                                    .foregroundColor(currentSectionIndex > 0 ? .primary : .secondary)
+                                            }
+                                            .disabled(currentSectionIndex <= 0)
+                                        }
+
+                                        Button {
+                                            audioPlayer.skipBackward(seconds: 15)
+                                        } label: {
+                                            Image(systemName: "gobackward.15")
+                                                .font(.system(size: 28))
+                                                .foregroundColor(.primary)
+                                        }
+
                                         Button(action: {
                                             if audioPlayer.isPlaying {
                                                 // Guardar progreso antes de pausar
@@ -437,6 +479,10 @@ struct ContentView: View {
                                             } else if let data = audioData {
                                                 audioPlayer.nowPlayingTitle = buildNowPlayingTitle()
                                                 try? audioPlayer.playAudio(data: data)
+                                                // Si hay posición guardada, retomar desde ahí
+                                                if lastPlaybackPosition > 0 {
+                                                    audioPlayer.seek(to: lastPlaybackPosition)
+                                                }
                                             }
                                         }) {
                                             Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
@@ -453,6 +499,26 @@ struct ContentView: View {
                                                 .font(.system(size: 48))
                                                 .foregroundColor(.red)
                                         }
+
+                                        Button {
+                                            audioPlayer.skipForward(seconds: 15)
+                                        } label: {
+                                            Image(systemName: "goforward.15")
+                                                .font(.system(size: 28))
+                                                .foregroundColor(.primary)
+                                        }
+
+                                        // Next section
+                                        if !sectionsQueue.isEmpty {
+                                            Button {
+                                                playNextSection()
+                                            } label: {
+                                                Image(systemName: "forward.end.fill")
+                                                    .font(.system(size: 24))
+                                                    .foregroundColor(currentSectionIndex < sectionsQueue.count - 1 ? .primary : .secondary)
+                                            }
+                                            .disabled(currentSectionIndex >= sectionsQueue.count - 1)
+                                        }
                                     }
                                 }
                                 .padding()
@@ -466,7 +532,7 @@ struct ContentView: View {
                                     HStack {
                                         Image(systemName: "book.fill")
                                             .foregroundColor(.green)
-                                        Text("Modo Libro Activado")
+                                        Text(String(localized: "cv.book_mode_active"))
                                             .font(.subheadline)
                                             .fontWeight(.semibold)
                                         Spacer()
@@ -481,7 +547,7 @@ struct ContentView: View {
                                             Image(systemName: "checkmark.circle.fill")
                                                 .foregroundColor(.green)
                                                 .font(.caption)
-                                            Text("\(preloadedSections.count) secciones pre-cargadas")
+                                            Text(String(format: String(localized: "cv.sections_preloaded"), preloadedSections.count))
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
                                             Spacer()
@@ -493,7 +559,7 @@ struct ContentView: View {
                                             Image(systemName: "arrow.down.circle")
                                                 .foregroundColor(.blue)
                                                 .font(.caption)
-                                            Text("Pre-cargando próximas secciones...")
+                                            Text(String(localized: "cv.preloading_sections"))
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
                                             Spacer()
@@ -501,8 +567,8 @@ struct ContentView: View {
                                     }
                                 }
                                 .padding()
-                                .background(Color.green.opacity(0.1))
                                 .cornerRadius(12)
+                                .background(Color.green.opacity(0.1))
                             }
                         }
                         
@@ -519,18 +585,19 @@ struct ContentView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Naturlly TTS")
+            .navigationTitle(String(localized: "cv.nav_title"))
             .toolbar {
-                if apiKey.isEmpty {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { showSettings = true }) {
-                            Image(systemName: "gearshape")
-                        }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showSettings = true }) {
+                        Image(systemName: "gearshape")
                     }
                 }
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView(apiKey: $apiKey, useVertexVoices: $useVertexVoices)
+                SettingsView(
+                    apiKey: $apiKey,
+                    useVertexVoices: $useVertexVoices
+                )
             }
             .sheet(isPresented: $showDocumentPicker) {
                 DocumentPicker(
@@ -539,26 +606,27 @@ struct ContentView: View {
                     errorMessage: $errorMessage
                 )
             }
-            .sheet(isPresented: $showDocuments) {
-                DocumentListView(
-                    documents: $documents,
-                    selectedDocument: $selectedDocument,
-                    text: $text,
-                    isPresented: $showDocuments,
-                    selectedSection: $selectedSection,
-                    showSections: $showSections,
-                    onPresentDocument: { document in
-                        presentationDocument = document
-                        showDocumentPresentation = true
-                    }
-                )
-            }
             .sheet(isPresented: $showSections) {
                 if let document = selectedDocument {
                     DocumentSectionsView(
                         document: document,
                         selectedSection: $selectedSection,
-                        text: $text
+                        text: $text,
+                        onSectionSelected: { section, index in
+                            if let section, let index {
+                                playSelectedSection(document: document, section: section, index: index)
+                            } else {
+                                // Documento completo: limpiar colas y evitar auto-play de secciones
+                                selectedDocument = document
+                                sectionsQueue = []
+                                currentSectionIndex = 0
+                                autoPlaySections = false
+                                audioData = nil
+                                text = cleanedText(from: document.text)
+                                // Opcional: generar audio del documento completo
+                                Task { await generateSectionAudio() }
+                            }
+                        }
                     )
                 }
             }
@@ -568,23 +636,15 @@ struct ContentView: View {
                     selectedVoice: $selectedVoice
                 )
             }
-            .sheet(isPresented: $showDocumentPresentation) {
-                if let doc = presentationDocument {
+            .sheet(item: $presentationDocument) { doc in
+                let preparedDoc = ensureSections(for: doc)
+                NavigationStack {
                     DocumentPresentationView(
-                        document: doc,
+                        document: preparedDoc,
                         selectedText: $text,
-                        lastReadSectionIndex: doc.id == lastReadDocument?.id ? lastReadSectionIndex : nil,
+                        lastReadSectionIndex: preparedDoc.id == lastReadDocument?.id ? lastReadSectionIndex : nil,
                         onSectionSelected: { section, index in
-                            // Activar reproducción continua automáticamente
-                            selectedDocument = doc
-                            sectionsQueue = doc.sections
-                            currentSectionIndex = index
-                            autoPlaySections = true
-                            
-                            // Si está en modo libro, iniciar pre-carga después de generar el audio actual
-                            if bookMode {
-                                print("📚 Modo Libro activado - Se pre-cargarán las próximas secciones")
-                            }
+                            playSelectedSection(document: preparedDoc, section: section, index: index)
                         }
                     )
                 }
@@ -592,14 +652,23 @@ struct ContentView: View {
         }
         .onAppear {
             loadAPIKey()
-            loadPersistedDocuments()
-            restoreReadingSession()
             setupAudioCallback()
+            loadPersistentProgressIfNeeded()
         }
-    }    
+        .onChange(of: text) { _, newValue in
+            syncSelectedDocumentTextIfNeeded(newValue)
+        }
+        .onChange(of: documents) { _, _ in
+            loadPersistentProgressIfNeeded()
+        }
+        .preferredColorScheme(.dark)
+        .tint(.cyan)
+    }
+    
     private func setupAudioCallback() {
-        audioPlayer.onAudioFinished = { [weak audioPlayer] in
+        audioPlayer.onAudioFinished = { [self] in
             DispatchQueue.main.async {
+                print("onAudioFinished: autoPlay=\(self.autoPlaySections), queueCount=\(self.sectionsQueue.count), currentIndex=\(self.currentSectionIndex)")
                 if self.autoPlaySections && !self.sectionsQueue.isEmpty {
                     self.playNextSection()
                 }
@@ -607,7 +676,60 @@ struct ContentView: View {
         }
     }
     
+    private func playSelectedSection(document: Document, section: DocumentSection, index: Int) {
+        selectedDocument = document
+        sectionsQueue = document.sections
+        currentSectionIndex = index
+        autoPlaySections = true
+        text = cleanedText(from: document.getSectionText(section))
+        lastPlaybackPosition = 0
+        
+        // Intentar reproducir desde caché primero
+        if let cached = getAudioFromCache(for: index) {
+            audioData = cached
+            audioPlayer.nowPlayingTitle = buildNowPlayingTitle()
+            try? audioPlayer.playAudio(data: cached)
+            preloadNextSections()
+            return
+        }
+        
+        // Generar la sección seleccionada
+        Task {
+            await generateSectionAudio()
+            if audioData == nil {
+                errorMessage = "No se pudo generar audio para la sección seleccionada"
+            }
+        }
+    }
+    
+    private func playPreviousSection() {
+        guard !sectionsQueue.isEmpty, currentSectionIndex > 0 else { return }
+        saveReadingProgress()
+        currentSectionIndex -= 1
+        lastPlaybackPosition = 0
+        let prevSection = sectionsQueue[currentSectionIndex]
+        guard let document = selectedDocument else { return }
+        let sectionText = document.getSectionText(prevSection)
+        text = cleanedText(from: sectionText)
+        if bookMode, let cachedAudio = getAudioFromCache(for: currentSectionIndex) {
+            audioData = cachedAudio
+            audioPlayer.nowPlayingTitle = buildNowPlayingTitle()
+            try? audioPlayer.playAudio(data: cachedAudio)
+            preloadNextSections()
+        } else {
+            Task {
+                await generateSectionAudio()
+                if bookMode, let data = audioData {
+                    let cacheKey = getCacheKey(for: prevSection, index: currentSectionIndex)
+                    audioCache[cacheKey] = data
+                    preloadedSections.insert(currentSectionIndex)
+                }
+            }
+        }
+    }
+
     private func playNextSection() {
+        print("playNextSection: currentIndex(before)=\(currentSectionIndex), queueCount=\(sectionsQueue.count)")
         guard !sectionsQueue.isEmpty else {
             autoPlaySections = false
             return
@@ -617,6 +739,8 @@ struct ContentView: View {
         saveReadingProgress()
         
         currentSectionIndex += 1
+        print("playNextSection: currentIndex(after)=\(currentSectionIndex)")
+        lastPlaybackPosition = 0
         
         if currentSectionIndex < sectionsQueue.count {
             let nextSection = sectionsQueue[currentSectionIndex]
@@ -625,6 +749,7 @@ struct ContentView: View {
                 
                 // Verificar si está en caché
                 if bookMode, let cachedAudio = getAudioFromCache(for: currentSectionIndex) {
+                    print("playNextSection: using cache for index \(currentSectionIndex)")
                     print("⚡️ ¡Audio en caché! Transición instantánea")
                     
                     let sectionText = document.getSectionText(nextSection)
@@ -644,6 +769,7 @@ struct ContentView: View {
                         errorMessage = error.localizedDescription
                     }
                 } else {
+                    print("playNextSection: generating audio for index \(currentSectionIndex)")
                     // No está en caché, generar normalmente
                     let sectionText = document.getSectionText(nextSection)
                     let rawBytes = sectionText.utf8.count
@@ -690,44 +816,101 @@ struct ContentView: View {
         audioData = nil
         
         do {
-            let service = GoogleTTSService(apiKey: apiKey, useVertex: useVertexVoices)
-            service.useSSMLPauses = useSSMLPauses
-            
-            // Verificar el tamaño del texto y dividir si es necesario
-            let textBytes = text.utf8.count
-            var data: Data
-            
-            if textBytes > 4000 {
-                // Texto demasiado largo, dividir en chunks
-                print("⚠️ Sección larga detectada: \(textBytes) bytes. Dividiendo...")
-                let chunks = splitTextIntoChunks(text)
-                print("✅ Sección dividida en \(chunks.count) fragmentos")
-                
-                // Generar audio para cada chunk y combinar
-                var allAudioData = Data()
-                for (index, chunk) in chunks.enumerated() {
-                    print("🔄 Generando fragmento \(index + 1)/\(chunks.count)...")
-                    let chunkData = try await service.synthesizeSpeech(
-                        text: chunk,
-                        language: selectedLanguage,
-                        speakingRate: speakingRate,
-                        pitch: pitch,
-                        voice: selectedVoice
-                    )
-                    allAudioData.append(chunkData)
+// Determinar qué servicio usar
+                let serviceType: TTSServiceType = useLongAudioService ? .longAudio : .regular
+                guard let backendURLObj = URL(string: backendURL) else {
+                    throw NSError(domain: "TTSService", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL del backend inválida"])
                 }
-                data = allAudioData
-                print("✅ Audio de sección combinado exitosamente")
-            } else {
-                // Texto normal, generar directamente
-                data = try await service.synthesizeSpeech(
-                    text: text,
-                    language: selectedLanguage,
-                    speakingRate: speakingRate,
-                    pitch: pitch,
-                    voice: selectedVoice
+                
+                let service = TTSServiceManager(
+                    apiKey: apiKey,
+                    backendURL: backendURLObj,
+                    gcsBucket: gcsBucket,
+                    serviceType: serviceType
                 )
-            }
+                
+                // Variables para los parámetros finales (después del análisis)
+                var finalRate = speakingRate
+                var finalPitch = pitch
+                
+                // Análisis de texto si está activado
+                if useNaturalAnalysis && !text.isEmpty && !apiKey.isEmpty {
+                    let nlService = NaturalLanguageService(apiKey: apiKey)
+                    let analysis = try await nlService.analyzeText(text)
+                    
+                    // Obtener parámetros sugeridos
+                    let suggestedParams = nlService.getSpeechParameters(from: analysis)
+                    finalRate = suggestedParams.rate
+                    finalPitch = suggestedParams.pitch
+                    
+                    // Generar resumen del análisis
+                    let enhancements = nlService.getSSMLEnhancements(from: analysis)
+                    await MainActor.run {
+                        analysisResult = """
+                        📊 Análisis de Texto:
+                        • Sentimiento: \(String(format: "%.2f", analysis.sentiment.score)) (magnitud: \(String(format: "%.2f", analysis.sentiment.magnitude)))
+                        • Entidades detectadas: \(analysis.entities.count)
+                        • Velocidad ajustada: \(String(format: "%.2f", finalRate))x
+                        • Tono ajustado: \(String(format: "%.1f", finalPitch))
+                        
+                        \(enhancements)
+                        """
+                    }
+                }
+                
+                // Verificar el tamaño del texto y dividir si es necesario (solo para servicio regular)
+                let textBytes = text.utf8.count
+                var data: Data
+                
+                if serviceType == .regular {
+                    let uiLimit = TextChunker.effectiveMaxBytes(base: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
+                    
+                    if textBytes > uiLimit {
+                        // Texto demasiado largo, dividir en chunks
+                        print("⚠️ Sección larga detectada: \(textBytes) bytes. Dividiendo...")
+                        let chunks = TextChunker.split(text, maxBytes: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
+                        print("✅ Sección dividida en \(chunks.count) fragmentos")
+                        
+                        // Generar audio para cada chunk y combinar
+                        var allAudioData = Data()
+                        for (index, chunk) in chunks.enumerated() {
+                            print("🔄 Generando fragmento \(index + 1)/\(chunks.count)...")
+                            let chunkData = try await service.synthesizeSpeech(
+                                text: chunk,
+                                language: selectedLanguage,
+                                speakingRate: finalRate,
+                                pitch: finalPitch,
+                                voice: selectedVoice,
+                                useSSMLPauses: useSSMLPauses
+                            )
+                            allAudioData.append(chunkData)
+                        }
+                        data = allAudioData
+                        print("✅ Audio de sección combinado exitosamente")
+                    } else {
+                        // Texto normal, generar directamente
+                        data = try await service.synthesizeSpeech(
+                            text: text,
+                            language: selectedLanguage,
+                            speakingRate: finalRate,
+                            pitch: finalPitch,
+                            voice: selectedVoice,
+                            useSSMLPauses: useSSMLPauses
+                        )
+                    }
+                } else {
+                    // Servicio de audio largo - maneja textos largos automáticamente
+                    print("🌐 Usando servicio de audio largo en VM: \(backendURL)")
+                    data = try await service.synthesizeSpeech(
+                        text: text,
+                        language: selectedLanguage,
+                        speakingRate: finalRate,
+                        pitch: finalPitch,
+                        voice: selectedVoice,
+                        useSSMLPauses: useSSMLPauses
+                    )
+                    print("✅ Audio generado exitosamente desde VM")
+                }
             
             await MainActor.run {
                 audioData = data
@@ -797,60 +980,22 @@ struct ContentView: View {
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    private func splitTextIntoChunks(_ text: String, maxBytes: Int = 4000) -> [String] {
-        // Usar 4500 en lugar de 5000 para dejar margen de seguridad
-        var chunks: [String] = []
-        var currentChunk = ""
-        
-        // Dividir por oraciones (puntos)
-        let sentences = text.components(separatedBy: ". ")
-        
-        for sentence in sentences {
-            let sentenceWithPeriod = sentence + ". "
-            let testChunk = currentChunk + sentenceWithPeriod
-            
-            // Verificar el tamaño en bytes
-            if testChunk.utf8.count <= maxBytes {
-                currentChunk = testChunk
-            } else {
-                // Si la oración sola es más grande que maxBytes, dividirla por palabras
-                if sentenceWithPeriod.utf8.count > maxBytes {
-                    let words = sentenceWithPeriod.components(separatedBy: " ")
-                    for word in words {
-                        let testWord = currentChunk + word + " "
-                        if testWord.utf8.count <= maxBytes {
-                            currentChunk = testWord
-                        } else {
-                            if !currentChunk.isEmpty {
-                                chunks.append(currentChunk.trimmingCharacters(in: .whitespaces))
-                            }
-                            currentChunk = word + " "
-                        }
-                    }
-                } else {
-                    // Guardar el chunk actual y empezar uno nuevo
-                    if !currentChunk.isEmpty {
-                        chunks.append(currentChunk.trimmingCharacters(in: .whitespaces))
-                    }
-                    currentChunk = sentenceWithPeriod
-                }
-            }
-        }
-        
-        // Agregar el último chunk
-        if !currentChunk.isEmpty {
-            chunks.append(currentChunk.trimmingCharacters(in: .whitespaces))
-        }
-        
-        return chunks.isEmpty ? [text] : chunks
-    }
-    
     private func generateSpeech() {
         isLoading = true
         errorMessage = nil
         analysisResult = nil
         audioPlayer.stop()
         audioData = nil
+        
+        // Si hay documento sin índice, genera secciones de respaldo antes de continuar
+        if let doc = selectedDocument, !doc.hasSections {
+            let prepared = ensureSections(for: doc)
+            selectedDocument = prepared
+            sectionsQueue = prepared.sections
+            if let first = prepared.sections.first {
+                text = cleanedText(from: prepared.getSectionText(first))
+            }
+        }
         
         Task {
             do {
@@ -882,17 +1027,18 @@ struct ContentView: View {
                     }
                 }
                 
-                let service = GoogleTTSService(apiKey: apiKey, useVertex: useVertexVoices)
+                let service = GoogleTTSService(apiKey: apiKey)
                 service.useSSMLPauses = useSSMLPauses
                 
                 // Verificar el tamaño del texto y dividir si es necesario
                 let textBytes = text.utf8.count
+                let uiLimit = TextChunker.effectiveMaxBytes(base: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
                 var data: Data
                 
-                if textBytes > 4000 {
+                if textBytes > uiLimit {
                     // Texto demasiado largo, dividir en chunks
                     print("⚠️ Texto largo detectado: \(textBytes) bytes. Dividiendo...")
-                    let chunks = splitTextIntoChunks(text)
+                    let chunks = TextChunker.split(text, maxBytes: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
                     print("✅ Texto dividido en \(chunks.count) fragmentos")
                     
                     // Generar audio para cada chunk y combinar
@@ -959,8 +1105,11 @@ struct ContentView: View {
         
         isPreloading = true
         
-        Task {
-            let sectionsToPreload = 3 // Pre-cargar 3 secciones adelante
+        Task(priority: .utility) {
+            // Small delay to avoid contention right when a new section starts.
+            try? await Task.sleep(nanoseconds: 300_000_000)
+
+            let sectionsToPreload = 1 // Mantener solo 1 sección adelantada para reducir carga
             let startIndex = currentSectionIndex + 1
             let endIndex = min(startIndex + sectionsToPreload, sectionsQueue.count)
             
@@ -979,7 +1128,7 @@ struct ContentView: View {
                 // Verificar si ya existe en memoria
                 if audioCache[cacheKey] != nil {
                     await MainActor.run {
-                        preloadedSections.insert(i)
+                        _ = preloadedSections.insert(i)
                     }
                     continue
                 }
@@ -990,14 +1139,15 @@ struct ContentView: View {
                     let sectionText = document.getSectionText(section)
                     let cleanText = cleanedText(from: sectionText)
                     
-                    let service = GoogleTTSService(apiKey: apiKey, useVertex: useVertexVoices)
+                    let service = GoogleTTSService(apiKey: apiKey)
                     service.useSSMLPauses = useSSMLPauses
                     let textBytes = cleanText.utf8.count
+                    let uiLimit = TextChunker.effectiveMaxBytes(base: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
                     var audioData: Data
                     
-                    if textBytes > 4000 {
+                    if textBytes > uiLimit {
                         // Dividir en chunks
-                        let chunks = splitTextIntoChunks(cleanText)
+                        let chunks = TextChunker.split(cleanText, maxBytes: TextChunker.maxBytes, marginPercent: 5, overheadBytes: 0)
                         var allAudioData = Data()
                         for chunk in chunks {
                             let chunkData = try await service.synthesizeSpeech(
@@ -1051,107 +1201,48 @@ struct ContentView: View {
     private func saveReadingProgress() {
         // Guardar el documento actual
         lastReadDocument = selectedDocument
-
+        
         // Guardar el índice de sección actual
         lastReadSectionIndex = currentSectionIndex
-
+        
         // Guardar la posición de reproducción
         lastPlaybackPosition = audioPlayer.currentTime
-
+        
         // Habilitar el botón de continuar
         canContinueReading = true
 
-        persistReadingSession()
+        // Persistir en disco
+        savePersistentProgress()
     }
-
-    private func persistReadingSession() {
-        let defaults = UserDefaults.standard
-
-        if let document = selectedDocument {
-            defaults.set(document.id.uuidString, forKey: "NaturllyLastReadDocumentID")
-            defaults.set(document.name, forKey: "NaturllyLastReadDocumentName")
-        } else {
-            defaults.removeObject(forKey: "NaturllyLastReadDocumentID")
-            defaults.removeObject(forKey: "NaturllyLastReadDocumentName")
-        }
-
-        defaults.set(lastReadSectionIndex, forKey: "NaturllyLastReadSectionIndex")
-        defaults.set(lastPlaybackPosition, forKey: "NaturllyLastPlaybackPosition")
-        defaults.set(canContinueReading, forKey: "NaturllyCanContinueReading")
-        defaults.set(selectedLanguage.code, forKey: "NaturllyLastLanguageCode")
-        defaults.set(bookMode, forKey: "NaturllyBookMode")
-        defaults.set(useVertexVoices, forKey: "UseVertexVoices")
-
-        if let voice = selectedVoice {
-            defaults.set(voice.id, forKey: "NaturllyLastVoiceID")
-            defaults.set(voice.languageCode, forKey: "NaturllyLastVoiceLanguageCode")
-            defaults.set(voice.name, forKey: "NaturllyLastVoiceName")
-        } else {
-            defaults.removeObject(forKey: "NaturllyLastVoiceID")
-            defaults.removeObject(forKey: "NaturllyLastVoiceLanguageCode")
-            defaults.removeObject(forKey: "NaturllyLastVoiceName")
-        }
-    }
-
-    private func restoreReadingSession() {
-        let defaults = UserDefaults.standard
-
-        if let languageCode = defaults.string(forKey: "NaturllyLastLanguageCode") {
-            if let language = TTSLanguage.availableLanguages.first(where: { $0.code == languageCode }) {
-                selectedLanguage = language
-            }
-        }
-
-        if let voiceID = defaults.string(forKey: "NaturllyLastVoiceID"),
-           let languageCode = defaults.string(forKey: "NaturllyLastVoiceLanguageCode") {
-            selectedVoice = TTSVoice.getVoices(for: languageCode).first(where: { $0.id == voiceID })
-        } else {
-            selectedVoice = nil
-        }
-
-        if defaults.object(forKey: "NaturllyBookMode") != nil {
-            bookMode = defaults.bool(forKey: "NaturllyBookMode")
-        }
-
-        if defaults.object(forKey: "NaturllyLastReadDocumentID") != nil,
-           let documentID = defaults.string(forKey: "NaturllyLastReadDocumentID") {
-            if let savedDocument = documents.first(where: { $0.id.uuidString == documentID }) {
-                selectedDocument = savedDocument
-                lastReadDocument = savedDocument
-                canContinueReading = defaults.bool(forKey: "NaturllyCanContinueReading")
-                lastReadSectionIndex = defaults.integer(forKey: "NaturllyLastReadSectionIndex")
-                lastPlaybackPosition = defaults.double(forKey: "NaturllyLastPlaybackPosition")
-
-                if savedDocument.hasSections && !savedDocument.sections.isEmpty {
-                    sectionsQueue = savedDocument.sections
-                    currentSectionIndex = min(max(lastReadSectionIndex, 0), sectionsQueue.count - 1)
-                    if currentSectionIndex >= 0 {
-                        let section = sectionsQueue[currentSectionIndex]
-                        text = cleanedText(from: savedDocument.getSectionText(section))
-                    }
-                }
-            }
-        }
-    }
-
+    
     private func continueReading() {
         guard let document = lastReadDocument else { return }
-
+        
+        // Verificar que el archivo aún existe
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: document.fileURL.path) else {
+            // El archivo ya no existe, mostrar error y limpiar estado
+            errorMessage = "El archivo del documento ya no está disponible. Por favor, importa el documento nuevamente."
+            canContinueReading = false
+            lastReadDocument = nil
+            return
+        }
+        
         // Restaurar el documento
         selectedDocument = document
-
+        
         // Si tiene secciones, restaurar la cola y el índice
         if document.hasSections && !document.sections.isEmpty {
             sectionsQueue = document.sections
             currentSectionIndex = lastReadSectionIndex
-
+            
             // Cargar el texto de la sección actual
             if currentSectionIndex < sectionsQueue.count {
                 let section = sectionsQueue[currentSectionIndex]
                 let rawText = document.getSectionText(section)
                 // Limpiar el texto antes de generar audio
                 text = cleanedText(from: rawText)
-
+                
                 // Habilitar reproducción continua
                 autoPlaySections = true
             }
@@ -1159,17 +1250,69 @@ struct ContentView: View {
             // Documento sin secciones, cargar todo el texto
             text = cleanedText(from: document.text)
         }
-
+        
         // Generar audio y reanudar desde la posición guardada
         Task {
-            await generateSpeech()
-
+            generateSpeech()
+            
             // Después de generar, buscar la posición guardada
             if let data = audioData, lastPlaybackPosition > 0 {
                 audioPlayer.nowPlayingTitle = buildNowPlayingTitle()
                 try? audioPlayer.playAudio(data: data)
                 audioPlayer.seek(to: lastPlaybackPosition)
             }
+        }
+    }
+
+    // MARK: - Persistencia de progreso
+    private var progressURL: URL {
+        let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return base.appendingPathComponent("readingProgress.json")
+    }
+    
+    private struct ReadingProgressRecord: Codable {
+        let documentId: UUID
+        let sectionIndex: Int
+        let playbackTime: TimeInterval
+    }
+    
+    private func savePersistentProgress() {
+        guard let docId = lastReadDocument?.id else { return }
+        let record = ReadingProgressRecord(
+            documentId: docId,
+            sectionIndex: lastReadSectionIndex,
+            playbackTime: lastPlaybackPosition
+        )
+        do {
+            let data = try JSONEncoder().encode(record)
+            try data.write(to: progressURL, options: .atomic)
+        } catch {
+            print("Error guardando progreso: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadPersistentProgressIfNeeded() {
+        guard !progressLoaded else { return }
+        do {
+            let data = try Data(contentsOf: progressURL)
+            let record = try JSONDecoder().decode(ReadingProgressRecord.self, from: data)
+            if let doc = documents.first(where: { $0.id == record.documentId }) {
+                // Verificar que el archivo aún existe
+                let fileManager = FileManager.default
+                if fileManager.fileExists(atPath: doc.fileURL.path) {
+                    lastReadDocument = doc
+                    lastReadSectionIndex = record.sectionIndex
+                    lastPlaybackPosition = record.playbackTime
+                    canContinueReading = true
+                } else {
+                    // Archivo no existe, limpiar progreso
+                    try? fileManager.removeItem(at: progressURL)
+                }
+            }
+            progressLoaded = true
+        } catch {
+            // No progreso previo o fallo al decodificar
+            progressLoaded = true
         }
     }
     
@@ -1200,14 +1343,6 @@ struct ContentView: View {
             useSSMLPauses = true // Activado por defecto
         }
     }
-
-    private func loadPersistedDocuments() {
-        do {
-            documents = try DocumentPersistence.loadDocuments()
-        } catch {
-            print("❌ Error cargando documentos persistidos: \(error.localizedDescription)")
-        }
-    }
     
     private func saveAnalysisPreference() {
         UserDefaults.standard.set(useNaturalAnalysis, forKey: "UseNaturalAnalysis")
@@ -1231,194 +1366,75 @@ struct ContentView: View {
     }
 }
 
-struct SettingsView: View {
-    @Binding var apiKey: String
-    @Binding var useVertexVoices: Bool
-    @Environment(\.dismiss) var dismiss
-    @State private var inputKey: String = ""
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    SecureField("AIzaSy...", text: $inputKey)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                } header: {
-                    Text("API Key de Google Cloud")
-                } footer: {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Para obtener tu API Key:")
-                        Text("1. Ve a console.cloud.google.com")
-                        Text("2. Habilita la API de Text-to-Speech")
-                        Text("3. Crea credenciales (API Key)")
-                    }
-                    .font(.caption)
-                }
-                
-                Section {
-                    Toggle("Usar voces de Vertex AI (v1beta1)", isOn: $useVertexVoices)
-                    
-                    Button("Guardar") {
-                        UserDefaults.standard.set(inputKey, forKey: "GoogleTTSAPIKey")
-                        UserDefaults.standard.set(useVertexVoices, forKey: "UseVertexVoices")
-                        apiKey = inputKey
-                        dismiss()
-                    }
-                    .disabled(inputKey.isEmpty)
-                    
-                    Button("Cancelar", role: .cancel) {
-                        dismiss()
-                    }
-                }
-            }
-            .navigationTitle("Configuración")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .onAppear {
-            inputKey = apiKey
-            if inputKey.isEmpty, !APIConfig.defaultGoogleTTSAPIKey.isEmpty {
-                inputKey = APIConfig.defaultGoogleTTSAPIKey
-            }
-        }
-    }
-}
-// MARK: - Document List View
-struct DocumentListView: View {
-    @Binding var documents: [Document]
-    @Binding var selectedDocument: Document?
-    @Binding var text: String
-    @Binding var isPresented: Bool
-    @Binding var selectedSection: DocumentSection?
-    @Binding var showSections: Bool
-    
-    let onPresentDocument: (Document) -> Void
-    var body: some View {
-        NavigationView {
-            List {
-                if documents.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "doc.text.magnifyingglass")
-                            .font(.system(size: 32))
-                            .foregroundColor(.gray)
-                        Text("No hay documentos")
-                            .font(.headline)
-                        Text("Importa archivos PDF o EPUB para convertirlos a audio")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                } else {
-                    ForEach(documents) { document in
-                        VStack(alignment: .leading, spacing: 0) {
-                            DocumentRow(document: document)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedDocument = document
-                                    selectedSection = nil  // Reset section when selecting document
-                                    text = document.text
-                                    isPresented = false
-                                }
-                            
-                            // Show index button if document has sections
-                            if document.hasSections {
-                                Button(action: {
-                                    onPresentDocument(document)
-                                }) {
-                                    HStack {
-                                        Image(systemName: "doc.text.image")
-                                            .foregroundColor(.blue)
-                                        Text("Ver Presentación")
-                                            .font(.subheadline)
-                                            .foregroundColor(.blue)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.vertical, 8)
-                                    .background(Color.blue.opacity(0.05))
-                                }
-                            }
-                        }
-                    }
-                    .onDelete(perform: deleteDocuments)
-                }
-            }
-            .navigationTitle("Mis Documentos")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cerrar") {
-                        isPresented = false
-                    }
-                }
-                
-                if !documents.isEmpty {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        EditButton()
-                    }
-                }
-            }
-        }
+// MARK: - Sección de respaldo para índice vacío
+extension ContentView {
+    private func ensureSections(for document: Document) -> Document {
+        if document.hasSections { return document }
+        let fallbackSections = generateFallbackSections(for: document.text)
+        var updated = document
+        updated.sections = fallbackSections
+        replaceDocument(updated)
+        return updated
     }
     
-    private func deleteDocuments(at offsets: IndexSet) {
-        documents.remove(atOffsets: offsets)
-        do {
-            try DocumentPersistence.saveDocuments(documents)
-        } catch {
-            print("❌ Error guardando cambios en documentos: \(error.localizedDescription)")
+    private func generateFallbackSections(for text: String, maxChars: Int = 3200) -> [DocumentSection] {
+        guard !text.isEmpty else { return [] }
+        var sections: [DocumentSection] = []
+        let total = text.count
+        var start = 0
+        while start < total {
+            let end = min(start + maxChars, total)
+            let title = "Sección \(sections.count + 1)"
+            sections.append(DocumentSection(title: title, startOffset: start, endOffset: end))
+            start = end
+        }
+        return sections
+    }
+    
+    private func replaceDocument(_ document: Document) {
+        if let idx = documents.firstIndex(where: { $0.id == document.id }) {
+            documents[idx] = document
+        }
+        if selectedDocument?.id == document.id {
+            selectedDocument = document
+        }
+        if presentationDocument?.id == document.id {
+            presentationDocument = document
         }
     }
-}
 
-// MARK: - Document Row
-struct DocumentRow: View {
-    let document: Document
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: document.type.icon)
-                .font(.system(size: 32))
-                .foregroundColor(.blue)
-                .frame(width: 40)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(document.name)
-                    .font(.headline)
-                    .lineLimit(2)
-                
-                HStack {
-                    if let pageCount = document.pageCount {
-                        Label("\(pageCount) páginas", systemImage: "doc.plaintext")
-                            .font(.caption)
-                    }
-                    Label("\(document.characterCount) caracteres", systemImage: "textformat.size")
-                        .font(.caption)
-                }
-                .foregroundColor(.secondary)
-                
-                Text(document.preview)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .padding(.top, 4)
-            }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
-                .font(.caption)
+    private func syncSelectedDocumentTextIfNeeded(_ newText: String) {
+        guard let current = selectedDocument else { return }
+
+        // Ignore programmatic text updates while reading by sections/pages.
+        // During playback, `text` contains the current section excerpt, not the full document.
+        if autoPlaySections || !sectionsQueue.isEmpty || selectedSection != nil {
+            return
         }
-        .padding(.vertical, 8)
+
+        guard current.text != newText else { return }
+
+        let updated = Document(
+            id: current.id,
+            name: current.name,
+            type: current.type,
+            fileURL: current.fileURL,
+            text: newText,
+            pageCount: current.pageCount,
+            createdAt: current.createdAt,
+            sections: current.sections
+        )
+        replaceDocument(updated)
     }
 }
 
 #Preview {
-    ContentView().environmentObject(AudioPlayerManager())
+    ContentView(
+        documents: .constant([]),
+        selectedDocument: .constant(nil),
+        text: .constant(""),
+        selectedSection: .constant(nil),
+        showSections: .constant(false)
+    ).environmentObject(AudioPlayerManager())
 }
+

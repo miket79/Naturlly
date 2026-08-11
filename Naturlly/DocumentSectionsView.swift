@@ -11,6 +11,7 @@ struct DocumentSectionsView: View {
     let document: Document
     @Binding var selectedSection: DocumentSection?
     @Binding var text: String
+    var onSectionSelected: ((DocumentSection?, Int?) -> Void)? = nil
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -35,6 +36,7 @@ struct DocumentSectionsView: View {
                         Button(action: {
                             selectedSection = nil
                             text = document.text
+                            onSectionSelected?(nil, nil)
                             dismiss()
                         }) {
                             HStack {
@@ -58,14 +60,20 @@ struct DocumentSectionsView: View {
                             Button(action: {
                                 selectedSection = section
                                 text = document.getSectionText(section)
+                                onSectionSelected?(section, index)
                                 dismiss()
                             }) {
-                                SectionRowView(section: section, index: index + 1)
+                                EnhancedSectionRowView(section: section, index: index + 1)
                             }
                             .foregroundColor(.primary)
                         }
                     } header: {
-                        Text("Secciones (\(document.sections.count))")
+                        HStack {
+                            Image(systemName: "text.book.closed.fill")
+                                .foregroundColor(.blue)
+                                .font(.caption)
+                            Text("Secciones (\(document.sections.count))")
+                        }
                     }
                 }
             }
@@ -117,6 +125,77 @@ struct SectionRowView: View {
     }
 }
 
+// MARK: - Enhanced Section Row View
+struct EnhancedSectionRowView: View {
+    let section: DocumentSection
+    let index: Int
+    
+    private var estimatedMinutes: Int {
+        max(1, section.characterCount / 750)
+    }
+    
+    private var formattedCharCount: String {
+        if section.characterCount > 1000 {
+            return String(format: "%.1fK", Double(section.characterCount) / 1000.0)
+        }
+        return "\(section.characterCount)"
+    }
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Number Badge
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.blue.opacity(0.2), Color.purple.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 36, height: 36)
+                
+                Text("\(index)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(.blue)
+            }
+            
+            // Section Info
+            VStack(alignment: .leading, spacing: 4) {
+                Text(section.title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(2)
+                    .foregroundColor(.primary)
+                
+                HStack(spacing: 10) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "doc.text")
+                            .font(.system(size: 10))
+                        Text(formattedCharCount)
+                    }
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 10))
+                        Text("\(estimatedMinutes)m")
+                    }
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Chevron
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 6)
+    }
+}
+
 #Preview {
     let sampleSections = [
         DocumentSection(title: "Introducción", startOffset: 0, endOffset: 1000),
@@ -135,7 +214,7 @@ struct SectionRowView: View {
         sections: sampleSections
     )
     
-    return DocumentSectionsView(
+    DocumentSectionsView(
         document: sampleDoc,
         selectedSection: .constant(nil),
         text: .constant("")

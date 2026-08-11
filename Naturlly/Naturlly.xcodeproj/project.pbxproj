@@ -39,9 +39,27 @@
 		2703C8E12EE9BE8300455D53 /* SwiftASN1 in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8E02EE9BE8300455D53 /* SwiftASN1 */; };
 		2703C8E42EE9BEA400455D53 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 2703C8E32EE9BEA400455D53 /* AsyncAlgorithms */; };
 		2703C8E82EEC4E6600455D53 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8E72EEC4E6600455D53 /* LibraryView.swift */; };
+		2703C8FC2EED640500455D53 /* DocumentCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2703C8FB2EED640500455D53 /* DocumentCoverView.swift */; };
+		2733AD652EFC637C00286BC1 /* TextChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733AD642EFC637C00286BC1 /* TextChunker.swift */; };
+		2733AD8F2F06FFE700286BC1 /* CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md in Resources */ = {isa = PBXBuildFile; fileRef = 2733AD8E2F06FFE700286BC1 /* CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md */; };
+		2733AD912F07080600286BC1 /* LongAudioTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733AD902F07080600286BC1 /* LongAudioTTSService.swift */; };
+		2733AD9E2F0C883000286BC1 /* LanguageSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733AD9D2F0C883000286BC1 /* LanguageSettings.swift */; };
+		273BA9C22EF74EB300560B7A /* APIConfig 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BA9C12EF74EB300560B7A /* APIConfig 2.swift */; };
+		273BA9C42EF74EDD00560B7A /* VoiceService 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BA9C32EF74EDD00560B7A /* VoiceService 2.swift */; };
+		273BA9C62EF74EFA00560B7A /* DocumentPresentationView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BA9C52EF74EFA00560B7A /* DocumentPresentationView 2.swift */; };
+		273BA9C82EF74EFA00560B7A /* DocumentSectionsView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BA9C72EF74EFA00560B7A /* DocumentSectionsView 2.swift */; };
+		273BA9CA2EF74EFE00560B7A /* LibraryView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BA9C92EF74EFE00560B7A /* LibraryView 2.swift */; };
+		27A6133B2F6FB5BC00B68E10 /* Info 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27A6133A2F6FB5BC00B68E10 /* Info 2.plist */; };
+		27A6133D2F6FB63D00B68E10 /* Info 3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27A6133C2F6FB63D00B68E10 /* Info 3.plist */; };
+		27BA39EF2EF76DEF00262147 /* GeminiTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BA39EE2EF76DEE00262147 /* GeminiTTSService.swift */; };
+		27DA96C32F7AC731001337BF /* TTSDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DA96C22F7AC731001337BF /* TTSDocument.swift */; };
+		27LOC0012F99000000455D53 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 27LOC0002F99000000455D53 /* Localizable.strings */; };
+		27SET0022F12345700455D53 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27SET0012F12345700455D53 /* SettingsView.swift */; };
+		27TTS0022F12345600455D53 /* TTSServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27TTS0012F12345600455D53 /* TTSServiceManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27004E182F63A12F00E9D2AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2703C8912EE9ADCC00455D53 /* Naturlly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Naturlly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2703C89F2EE9AE9800455D53 /* AudioPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerManager.swift; sourceTree = "<group>"; };
 		2703C8A02EE9AE9800455D53 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,10 +89,29 @@
 		2703C8D12EE9B1C000455D53 /* VoiceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceService.swift; sourceTree = "<group>"; };
 		2703C8D32EE9B97700455D53 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		2703C8E72EEC4E6600455D53 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		2703C8F12EEC64D500455D53 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		2703C8FB2EED640500455D53 /* DocumentCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentCoverView.swift; sourceTree = "<group>"; };
+		2733AD642EFC637C00286BC1 /* TextChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextChunker.swift; sourceTree = "<group>"; };
+		2733AD8E2F06FFE700286BC1 /* CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md; sourceTree = "<group>"; };
+		2733AD902F07080600286BC1 /* LongAudioTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongAudioTTSService.swift; sourceTree = "<group>"; };
+		2733AD9D2F0C883000286BC1 /* LanguageSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSettings.swift; sourceTree = "<group>"; };
+		273BA9C12EF74EB300560B7A /* APIConfig 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIConfig 2.swift"; sourceTree = "<group>"; };
+		273BA9C32EF74EDD00560B7A /* VoiceService 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VoiceService 2.swift"; sourceTree = "<group>"; };
+		273BA9C52EF74EFA00560B7A /* DocumentPresentationView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentPresentationView 2.swift"; sourceTree = "<group>"; };
+		273BA9C72EF74EFA00560B7A /* DocumentSectionsView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentSectionsView 2.swift"; sourceTree = "<group>"; };
+		273BA9C92EF74EFE00560B7A /* LibraryView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryView 2.swift"; sourceTree = "<group>"; };
+		27A6133A2F6FB5BC00B68E10 /* Info 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info 2.plist"; sourceTree = "<group>"; };
+		27A6133C2F6FB63D00B68E10 /* Info 3.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info 3.plist"; sourceTree = "<group>"; };
+		27BA39EE2EF76DEE00262147 /* GeminiTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiTTSService.swift; sourceTree = "<group>"; };
+		27DA96C22F7AC731001337BF /* TTSDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSDocument.swift; sourceTree = "<group>"; };
+		27LOC0032F99000000455D53 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		27LOC0042F99000000455D53 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		27SET0012F12345700455D53 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		27TTS0012F12345600455D53 /* TTSServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSServiceManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2703C8E62EE9BF3500455D53 /* Exceptions for "Naturlly" folder in "Naturlly" target */ = {
+		2733AD9C2F0C73AA00286BC1 /* Exceptions for "Naturlly" folder in "Naturlly" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -87,7 +124,7 @@
 		2703C8932EE9ADCC00455D53 /* Naturlly */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				2703C8E62EE9BF3500455D53 /* Exceptions for "Naturlly" folder in "Naturlly" target */,
+				2733AD9C2F0C73AA00286BC1 /* Exceptions for "Naturlly" folder in "Naturlly" target */,
 			);
 			path = Naturlly;
 			sourceTree = "<group>";
@@ -120,6 +157,7 @@
 				2703C8A22EE9AE9800455D53 /* ContentView.swift.bak2 */,
 				2703C8A32EE9AE9800455D53 /* ContentView.swift.bak3 */,
 				2703C8A42EE9AE9800455D53 /* Document.swift */,
+				2703C8F12EEC64D500455D53 /* LibraryView.swift */,
 				2703C8A52EE9AE9800455D53 /* DocumentPicker.swift */,
 				2703C8A62EE9AE9800455D53 /* DocumentPresentationView.swift */,
 				2703C8A72EE9AE9800455D53 /* DocumentSectionsView.swift */,
@@ -143,6 +181,24 @@
 				2703C8D12EE9B1C000455D53 /* VoiceService.swift */,
 				2703C8D32EE9B97700455D53 /* APIConfig.swift */,
 				2703C8E72EEC4E6600455D53 /* LibraryView.swift */,
+				2703C8FB2EED640500455D53 /* DocumentCoverView.swift */,
+				273BA9C12EF74EB300560B7A /* APIConfig 2.swift */,
+				273BA9C32EF74EDD00560B7A /* VoiceService 2.swift */,
+				273BA9C52EF74EFA00560B7A /* DocumentPresentationView 2.swift */,
+				273BA9C72EF74EFA00560B7A /* DocumentSectionsView 2.swift */,
+				273BA9C92EF74EFE00560B7A /* LibraryView 2.swift */,
+				27BA39EE2EF76DEE00262147 /* GeminiTTSService.swift */,
+				2733AD642EFC637C00286BC1 /* TextChunker.swift */,
+				2733AD8E2F06FFE700286BC1 /* CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md */,
+				2733AD902F07080600286BC1 /* LongAudioTTSService.swift */,
+				2733AD9D2F0C883000286BC1 /* LanguageSettings.swift */,
+				27TTS0012F12345600455D53 /* TTSServiceManager.swift */,
+				27SET0012F12345700455D53 /* SettingsView.swift */,
+				27004E182F63A12F00E9D2AA /* Info.plist */,
+				27A6133A2F6FB5BC00B68E10 /* Info 2.plist */,
+				27A6133C2F6FB63D00B68E10 /* Info 3.plist */,
+				27DA96C22F7AC731001337BF /* TTSDocument.swift */,
+				27LOC0002F99000000455D53 /* Localizable.strings */,
 			);
 			sourceTree = "<group>";
 		};
@@ -168,6 +224,24 @@
 			buildRules = (
 			);
 			dependencies = (
+				27004E452F65EEB600E9D2AA /* PBXTargetDependency */,
+				27004E432F65EEB000E9D2AA /* PBXTargetDependency */,
+				27004E412F65EEA800E9D2AA /* PBXTargetDependency */,
+				27004E272F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E292F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E2B2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E2D2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E2F2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E312F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E332F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E352F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E372F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E392F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E3B2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E3D2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E3F2F65EEA200E9D2AA /* PBXTargetDependency */,
+				27004E252F65EE9A00E9D2AA /* PBXTargetDependency */,
+				27004E232F65EE9100E9D2AA /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				2703C8932EE9ADCC00455D53 /* Naturlly */,
@@ -192,7 +266,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2610;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					2703C8902EE9ADCC00455D53 = {
 						CreatedOnToolsVersion = 26.1.1;
@@ -204,6 +278,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				es,
 				Base,
 			);
 			mainGroup = 2703C8882EE9ADCC00455D53;
@@ -234,12 +309,16 @@
 				2703C8C72EE9AE9800455D53 /* INSTRUCCIONES_USUARIO.md in Resources */,
 				2703C8C82EE9AE9800455D53 /* FIX_ObservableObject.md in Resources */,
 				2703C8C92EE9AE9800455D53 /* setup.sh in Resources */,
+				27A6133D2F6FB63D00B68E10 /* Info 3.plist in Resources */,
 				2703C8CA2EE9AE9800455D53 /* NATURAL_LANGUAGE_INTEGRATION.md in Resources */,
 				2703C8CB2EE9AE9800455D53 /* ContentView.swift.backup in Resources */,
 				2703C8CC2EE9AE9800455D53 /* ContentView.swift.bak2 in Resources */,
 				2703C8CD2EE9AE9800455D53 /* INSTALL.md in Resources */,
 				2703C8CE2EE9AE9800455D53 /* ContentView.swift.bak3 in Resources */,
 				2703C8CF2EE9AE9800455D53 /* FIX_LONG_TEXT.md in Resources */,
+				27A6133B2F6FB5BC00B68E10 /* Info 2.plist in Resources */,
+				2733AD8F2F06FFE700286BC1 /* CHECKPOINT_BEFORE_LONG_AUDIO_INTEGRATION.md in Resources */,
+				27LOC0012F99000000455D53 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,25 +332,125 @@
 				2703C8B82EE9AE9800455D53 /* GoogleTTSService.swift in Sources */,
 				2703C8B92EE9AE9800455D53 /* TTSRequest.swift in Sources */,
 				2703C8BA2EE9AE9800455D53 /* EPUBReader.swift in Sources */,
+				27BA39EF2EF76DEF00262147 /* GeminiTTSService.swift in Sources */,
+				273BA9C82EF74EFA00560B7A /* DocumentSectionsView 2.swift in Sources */,
 				2703C8BB2EE9AE9800455D53 /* NaturalLanguageService.swift in Sources */,
 				2703C8E82EEC4E6600455D53 /* LibraryView.swift in Sources */,
 				2703C8D42EE9B97700455D53 /* APIConfig.swift in Sources */,
 				2703C8D22EE9B1C000455D53 /* VoiceService.swift in Sources */,
+				273BA9CA2EF74EFE00560B7A /* LibraryView 2.swift in Sources */,
+				2733AD9E2F0C883000286BC1 /* LanguageSettings.swift in Sources */,
 				2703C8BC2EE9AE9800455D53 /* PDFDocumentReader.swift in Sources */,
+				2703C8FC2EED640500455D53 /* DocumentCoverView.swift in Sources */,
 				2703C8BD2EE9AE9800455D53 /* DocumentPicker.swift in Sources */,
+				2733AD912F07080600286BC1 /* LongAudioTTSService.swift in Sources */,
 				2703C8BE2EE9AE9800455D53 /* AudioPlayerManager.swift in Sources */,
 				2703C8BF2EE9AE9800455D53 /* ContentView.swift in Sources */,
+				273BA9C42EF74EDD00560B7A /* VoiceService 2.swift in Sources */,
 				2703C8C02EE9AE9800455D53 /* Document.swift in Sources */,
+				2733AD652EFC637C00286BC1 /* TextChunker.swift in Sources */,
 				2703C8C12EE9AE9800455D53 /* TTSVoice.swift in Sources */,
+				273BA9C22EF74EB300560B7A /* APIConfig 2.swift in Sources */,
+				273BA9C62EF74EFA00560B7A /* DocumentPresentationView 2.swift in Sources */,
 				2703C8C32EE9AE9800455D53 /* VoicePickerView.swift in Sources */,
 				2703C8C22EE9AE9800455D53 /* DocumentPresentationView.swift in Sources */,
+				27DA96C32F7AC731001337BF /* TTSDocument.swift in Sources */,
 				2703C8C42EE9AE9800455D53 /* NaturllyApp.swift in Sources */,
 				2703C8C52EE9AE9800455D53 /* TTSLanguage.swift in Sources */,
 				2703C8C62EE9AE9800455D53 /* DocumentSectionsView.swift in Sources */,
+				27TTS0022F12345600455D53 /* TTSServiceManager.swift in Sources */,
+				27SET0022F12345700455D53 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		27004E232F65EE9100E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E222F65EE9100E9D2AA /* Algorithms */;
+		};
+		27004E252F65EE9A00E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E242F65EE9A00E9D2AA /* ZIPFoundation */;
+		};
+		27004E272F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E262F65EEA200E9D2AA /* NIO */;
+		};
+		27004E292F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E282F65EEA200E9D2AA /* NIOConcurrencyHelpers */;
+		};
+		27004E2B2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E2A2F65EEA200E9D2AA /* NIOCore */;
+		};
+		27004E2D2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E2C2F65EEA200E9D2AA /* NIOEmbedded */;
+		};
+		27004E2F2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E2E2F65EEA200E9D2AA /* NIOFoundationCompat */;
+		};
+		27004E312F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E302F65EEA200E9D2AA /* NIOHTTP1 */;
+		};
+		27004E332F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E322F65EEA200E9D2AA /* NIOPosix */;
+		};
+		27004E352F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E342F65EEA200E9D2AA /* NIOTLS */;
+		};
+		27004E372F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E362F65EEA200E9D2AA /* NIOTestUtils */;
+		};
+		27004E392F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E382F65EEA200E9D2AA /* NIOWebSocket */;
+		};
+		27004E3B2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E3A2F65EEA200E9D2AA /* _NIOConcurrency */;
+		};
+		27004E3D2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E3C2F65EEA200E9D2AA /* _NIOFileSystem */;
+		};
+		27004E3F2F65EEA200E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E3E2F65EEA200E9D2AA /* _NIOFileSystemFoundationCompat */;
+		};
+		27004E412F65EEA800E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E402F65EEA800E9D2AA /* AEXML */;
+		};
+		27004E432F65EEB000E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E422F65EEB000E9D2AA /* SwiftASN1 */;
+		};
+		27004E452F65EEB600E9D2AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 27004E442F65EEB600E9D2AA /* AsyncAlgorithms */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		27LOC0002F99000000455D53 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				27LOC0032F99000000455D53 /* en */,
+				27LOC0042F99000000455D53 /* es */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		2703C89A2EE9ADCE00455D53 /* Debug */ = {
@@ -333,6 +512,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -390,6 +570,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -407,12 +588,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Naturlly/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Naturlly;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -435,6 +618,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Naturlly/NaturllyRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3GLCJ7M245;
@@ -442,12 +626,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Naturlly/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Naturlly;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -540,6 +726,96 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		27004E222F65EE9100E9D2AA /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8D52EE9BDFE00455D53 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		27004E242F65EE9A00E9D2AA /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8D82EE9BE1700455D53 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		27004E262F65EEA200E9D2AA /* NIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIO;
+		};
+		27004E282F65EEA200E9D2AA /* NIOConcurrencyHelpers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOConcurrencyHelpers;
+		};
+		27004E2A2F65EEA200E9D2AA /* NIOCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOCore;
+		};
+		27004E2C2F65EEA200E9D2AA /* NIOEmbedded */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOEmbedded;
+		};
+		27004E2E2F65EEA200E9D2AA /* NIOFoundationCompat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOFoundationCompat;
+		};
+		27004E302F65EEA200E9D2AA /* NIOHTTP1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOHTTP1;
+		};
+		27004E322F65EEA200E9D2AA /* NIOPosix */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOPosix;
+		};
+		27004E342F65EEA200E9D2AA /* NIOTLS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOTLS;
+		};
+		27004E362F65EEA200E9D2AA /* NIOTestUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOTestUtils;
+		};
+		27004E382F65EEA200E9D2AA /* NIOWebSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOWebSocket;
+		};
+		27004E3A2F65EEA200E9D2AA /* _NIOConcurrency */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOConcurrency;
+		};
+		27004E3C2F65EEA200E9D2AA /* _NIOFileSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOFileSystem;
+		};
+		27004E3E2F65EEA200E9D2AA /* _NIOFileSystemFoundationCompat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DB2EE9BE3300455D53 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOFileSystemFoundationCompat;
+		};
+		27004E402F65EEA800E9D2AA /* AEXML */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DC2EE9BE5F00455D53 /* XCRemoteSwiftPackageReference "AEXML" */;
+			productName = AEXML;
+		};
+		27004E422F65EEB000E9D2AA /* SwiftASN1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8DF2EE9BE8300455D53 /* XCRemoteSwiftPackageReference "swift-asn1" */;
+			productName = SwiftASN1;
+		};
+		27004E442F65EEB600E9D2AA /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2703C8E22EE9BEA400455D53 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
 		2703C8D62EE9BDFE00455D53 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2703C8D52EE9BDFE00455D53 /* XCRemoteSwiftPackageReference "swift-algorithms" */;

@@ -70,11 +70,6 @@ struct DocumentPicker: UIViewControllerRepresentable {
                     // Add to documents list
                     DispatchQueue.main.async {
                         self.parent.documents.append(document)
-                        do {
-                            try DocumentPersistence.saveDocuments(self.parent.documents)
-                        } catch {
-                            self.parent.errorMessage = "Error guardando documentos: \(error.localizedDescription)"
-                        }
                     }
                     
                 } catch {

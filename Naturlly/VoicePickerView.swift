@@ -24,21 +24,93 @@ struct VoicePickerView: View {
     @State private var dynamicVoices: [TTSVoice] = []
     @State private var errorMessage: String? = nil
     
+    private func favoritesKey(for languageCode: String) -> String { "FavoriteVoices_\(languageCode)" }
+    
+    private func loadFavorites(for languageCode: String) -> Set<String> {
+        let key = favoritesKey(for: languageCode)
+        if let arr = UserDefaults.standard.array(forKey: key) as? [String] {
+            return Set(arr)
+        }
+        return []
+    }
+    
+    private func saveFavorites(_ favorites: Set<String>, for languageCode: String) {
+        let key = favoritesKey(for: languageCode)
+        UserDefaults.standard.set(Array(favorites), forKey: key)
+    }
+    
     private var availableVoices: [TTSVoice] {
-        dynamicVoices.isEmpty ? TTSVoice.getVoices(for: language.code) : dynamicVoices
+        let base = dynamicVoices.isEmpty ? TTSVoice.getVoices(for: language.code) : dynamicVoices
+        let favs = loadFavorites(for: language.code)
+        return base.map { v in
+            var vv = v
+            vv.isFavorite = favs.contains(v.id)
+            return vv
+        }
     }
     
     private var groupedVoices: [(VoiceType, [TTSVoice])] {
-        let grouped = Dictionary(grouping: availableVoices) { $0.type }
-        return grouped.sorted { $0.key.rawValue < $1.key.rawValue }
-            .map { ($0.key, $0.value.sorted { $0.name < $1.name }) }
+        {
+            typealias Group = (key: VoiceType, voices: [TTSVoice])
+            let voices: [TTSVoice] = availableVoices
+            let groupedDict: [VoiceType: [TTSVoice]] = Dictionary(grouping: voices, by: { (voice: TTSVoice) -> VoiceType in
+                voice.type
+            })
+
+            let sortedKeys: [VoiceType] = groupedDict.keys.sorted(by: { (lhs: VoiceType, rhs: VoiceType) -> Bool in
+                lhs.rawValue < rhs.rawValue
+            })
+
+            var result: [Group] = []
+            result.reserveCapacity(sortedKeys.count)
+
+            for key in sortedKeys {
+                let arr: [TTSVoice] = groupedDict[key] ?? []
+                let sortedArr: [TTSVoice] = arr.sorted(by: { (a: TTSVoice, b: TTSVoice) -> Bool in
+                    if a.isFavorite != b.isFavorite {
+                        return a.isFavorite && !b.isFavorite
+                    }
+                    return a.name < b.name
+                })
+                result.append((key: key, voices: sortedArr))
+            }
+
+            // Return as array of tuples to satisfy the property type
+            var tuples: [(VoiceType, [TTSVoice])] = []
+            tuples.reserveCapacity(result.count)
+            for item in result {
+                tuples.append((item.key, item.voices))
+            }
+            return tuples
+        }()
+    }
+    
+    private func toggleFavorite(for voice: TTSVoice) {
+        var favs = loadFavorites(for: language.code)
+        if favs.contains(voice.id) {
+            favs.remove(voice.id)
+        } else {
+            favs.insert(voice.id)
+        }
+        saveFavorites(favs, for: language.code)
+
+        if let idx = dynamicVoices.firstIndex(where: { $0.id == voice.id && $0.languageCode == voice.languageCode }) {
+            dynamicVoices[idx].isFavorite = favs.contains(voice.id)
+        } else {
+            let all = availableVoices
+            if let sidx = all.firstIndex(where: { $0.id == voice.id && $0.languageCode == voice.languageCode }) {
+                var updated = all[sidx]
+                updated.isFavorite = favs.contains(voice.id)
+                dynamicVoices = all.enumerated().map { (index, element) in index == sidx ? updated : element }
+            }
+        }
     }
     
     var body: some View {
         NavigationView {
             VStack {
                 Picker("Proveedor", selection: $provider) {
-                    ForEach(VoiceProvider.allCases) { provider in
+                    ForEach(VoiceProvider.allCases) { (provider: VoiceProvider) in
                         Text(provider.rawValue).tag(provider)
                     }
                 }
@@ -51,7 +123,7 @@ struct VoicePickerView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle())
                                 .scaleEffect(1.5)
-                            Text("Cargando voces...")
+                            Text(String(localized: "voice_picker.loading"))
                                 .font(.headline)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -67,9 +139,9 @@ struct VoicePickerView: View {
                             Image(systemName: "waveform.circle")
                                 .font(.system(size: 48))
                                 .foregroundColor(.gray)
-                            Text("No hay voces disponibles")
+                            Text(String(localized: "voice_picker.empty"))
                                 .font(.headline)
-                            Text("No se encontraron voces para este idioma")
+                            Text(String(localized: "voice_picker.empty_desc"))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
@@ -77,12 +149,34 @@ struct VoicePickerView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                     } else {
-                        ForEach(groupedVoices, id: \.0) { voiceType, voices in
-                            Section {
-                                ForEach(voices) { voice in
+                        // Favorites section on top
+                        let favorites = availableVoices.filter { $0.isFavorite }
+                        if !favorites.isEmpty {
+                            Section(String(localized: "voice_picker.favorites")) {
+                                ForEach(favorites) { voice in
                                     VoiceRowView(
                                         voice: voice,
-                                        isSelected: selectedVoice?.id == voice.id
+                                        isSelected: selectedVoice?.id == voice.id,
+                                        onToggleFavorite: { toggleFavorite(for: voice) }
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        selectedVoice = voice
+                                        dismiss()
+                                    }
+                                }
+                            }
+                        }
+                        
+                        ForEach(groupedVoices, id: \.0) { pair in
+                            let voiceType = pair.0
+                            let voices = pair.1
+                            Section {
+                                ForEach(voices.filter { !$0.isFavorite }) { voice in
+                                    VoiceRowView(
+                                        voice: voice,
+                                        isSelected: selectedVoice?.id == voice.id,
+                                        onToggleFavorite: { toggleFavorite(for: voice) }
                                     )
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -102,10 +196,10 @@ struct VoicePickerView: View {
                                 }
                             } footer: {
                                 if voiceType == .wavenet {
-                                    Text("WaveNet: Calidad superior con sonido más natural")
+                                    Text(String(localized: "voice_picker.wavenet_footer"))
                                         .font(.caption)
                                 } else if voiceType == .neural2 {
-                                    Text("Neural2: Última generación con máxima naturalidad")
+                                    Text(String(localized: "voice_picker.neural2_footer"))
                                         .font(.caption)
                                 }
                             }
@@ -113,28 +207,23 @@ struct VoicePickerView: View {
                     }
                 }
             }
-            .navigationTitle("Seleccionar Voz")
+            .navigationTitle(String(localized: "voice_picker.nav_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cerrar") {
-                        dismiss()
-                    }
+                    Button(String(localized: "btn.close"), action: { dismiss() })
                 }
                 
                 if selectedVoice != nil {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Por defecto") {
-                            selectedVoice = nil
-                            dismiss()
-                        }
+                        Button(String(localized: "btn.default"), action: { selectedVoice = nil; dismiss() })
                     }
                 }
             }
             .task {
                 await fetchVoices()
             }
-            .onChange(of: provider) { _ in
+            .onChange(of: provider) { _, _ in
                 Task {
                     await fetchVoices()
                 }
@@ -151,7 +240,12 @@ struct VoicePickerView: View {
             let apiKey = UserDefaults.standard.string(forKey: "GoogleTTSAPIKey") ?? ""
             let voices = try await VoiceService.shared.fetchVoices(apiKey: apiKey, languageCode: language.code, useVertex: provider == .vertex)
             await MainActor.run {
-                dynamicVoices = voices
+                let favs = loadFavorites(for: language.code)
+                dynamicVoices = voices.map { v in
+                    var vv = v
+                    vv.isFavorite = favs.contains(v.id)
+                    return vv
+                }
                 isLoading = false
                 errorMessage = nil
             }
@@ -168,6 +262,7 @@ struct VoicePickerView: View {
 struct VoiceRowView: View {
     let voice: TTSVoice
     let isSelected: Bool
+    let onToggleFavorite: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
@@ -177,9 +272,18 @@ struct VoiceRowView: View {
                 .frame(width: 30)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(voice.name)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .semibold : .regular)
+                HStack(spacing: 6) {
+                    Text(voice.simpleName)
+                        .font(.subheadline)
+                        .fontWeight(isSelected ? .semibold : .regular)
+                    Text(voice.languageCode)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(UIColor.tertiarySystemFill))
+                        .cornerRadius(4)
+                }
                 
                 HStack(spacing: 8) {
                     Text(voice.gender == .male ? "Masculina" : "Femenina")
@@ -196,6 +300,14 @@ struct VoiceRowView: View {
             
             Spacer()
             
+            // Star favorite button
+            Button(action: { onToggleFavorite() }) {
+                Image(systemName: voice.isFavorite ? "star.fill" : "star")
+                    .foregroundColor(voice.isFavorite ? .yellow : .secondary)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.blue)
@@ -204,3 +316,4 @@ struct VoiceRowView: View {
         .padding(.vertical, 4)
     }
 }
+
