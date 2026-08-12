@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject var audioPlayer: AudioPlayerManager
     @Binding var documents: [Document]
     @Binding var selectedDocument: Document?
@@ -656,8 +657,26 @@ struct ContentView: View {
             loadPersistentProgressIfNeeded()
             restoreReadingSession()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .inactive || newPhase == .background {
+                persistReadingSession()
+                savePersistentProgress()
+            } else if newPhase == .active {
+                loadPersistentProgressIfNeeded()
+                restoreReadingSession()
+            }
+        }
         .onChange(of: text) { _, newValue in
             syncSelectedDocumentTextIfNeeded(newValue)
+        }
+        .onChange(of: selectedLanguage) { _, _ in
+            persistReadingSession()
+        }
+        .onChange(of: selectedVoice) { _, _ in
+            persistReadingSession()
+        }
+        .onChange(of: bookMode) { _, _ in
+            persistReadingSession()
         }
         .onChange(of: documents) { _, _ in
             progressLoaded = false
@@ -1270,6 +1289,7 @@ struct ContentView: View {
             return
         }
 
+        selectedDocument = savedDocument
         lastReadDocument = savedDocument
         canContinueReading = defaults.bool(forKey: "NaturllyCanContinueReading")
         lastReadSectionIndex = defaults.integer(forKey: "NaturllyLastReadSectionIndex")
@@ -1278,6 +1298,17 @@ struct ContentView: View {
         if savedDocument.hasSections && !savedDocument.sections.isEmpty {
             sectionsQueue = savedDocument.sections
             currentSectionIndex = min(max(lastReadSectionIndex, 0), sectionsQueue.count - 1)
+            autoPlaySections = canContinueReading
+
+            if currentSectionIndex >= 0 && currentSectionIndex < sectionsQueue.count {
+                let section = sectionsQueue[currentSectionIndex]
+                text = cleanedText(from: savedDocument.getSectionText(section))
+            }
+        } else {
+            sectionsQueue = []
+            currentSectionIndex = 0
+            autoPlaySections = false
+            text = cleanedText(from: savedDocument.text)
         }
     }
     
