@@ -13,6 +13,9 @@ import AVFoundation
 import Combine
 import MediaPlayer
 import os
+#if canImport(UIKit)
+import UIKit
+#endif
 
 class AudioPlayerManager: NSObject, ObservableObject {
     @Published var isPlaying = false
@@ -67,10 +70,22 @@ class AudioPlayerManager: NSObject, ObservableObject {
         super.init()
         setupAudioSession()
         setupNowPlayingAndRemoteCommands()
+        observeAudioSessionNotifications()
         loadPersistedQueue()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        #if canImport(UIKit)
+        UIApplication.shared.endReceivingRemoteControlEvents()
+        #endif
     }
     
     private func setupNowPlayingAndRemoteCommands() {
+        #if canImport(UIKit)
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        #endif
+
         let center = MPRemoteCommandCenter.shared()
         center.playCommand.addTarget { [weak self] _ in
             self?.resume()
@@ -121,6 +136,63 @@ class AudioPlayerManager: NSObject, ObservableObject {
             logger.info("Audio session configured for background playback")
         } catch {
             logger.error("Failed to setup audio session: \(error.localizedDescription)")
+        }
+    }
+
+    private func observeAudioSessionNotifications() {
+        let center = NotificationCenter.default
+        center.addObserver(
+            self,
+            selector: #selector(handleAudioSessionInterruption(_:)),
+            name: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+        center.addObserver(
+            self,
+            selector: #selector(handleAudioSessionRouteChange(_:)),
+            name: AVAudioSession.routeChangeNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+    }
+
+    @objc private func handleAudioSessionInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            return
+        }
+
+        switch type {
+        case .began:
+            pause()
+        case .ended:
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                logger.error("Failed to reactivate audio session after interruption: \(error.localizedDescription)")
+            }
+            if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt,
+               AVAudioSession.InterruptionOptions(rawValue: optionsValue).contains(.shouldResume) {
+                resume()
+            } else {
+                updateNowPlayingInfo()
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    @objc private func handleAudioSessionRouteChange(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+            return
+        }
+
+        if reason == .oldDeviceUnavailable {
+            pause()
+        } else {
+            updateNowPlayingInfo()
         }
     }
     
@@ -178,6 +250,8 @@ class AudioPlayerManager: NSObject, ObservableObject {
     }
     
     func playAudio(data: Data) throws {
+        try AVAudioSession.sharedInstance().setActive(true)
+
         // Stop current playback if any
         stop()
         
@@ -212,6 +286,7 @@ class AudioPlayerManager: NSObject, ObservableObject {
     }
 
     func resume() {
+        try? AVAudioSession.sharedInstance().setActive(true)
         audioPlayer?.play()
         isPlaying = true
         startTimer()
@@ -363,6 +438,9 @@ class AudioPlayerManager: NSObject, ObservableObject {
         }
         
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        if #available(iOS 13.0, *) {
+            MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : (audioPlayer == nil ? .stopped : .paused)
+        }
     }
 
     private func savePersistedQueue() {
